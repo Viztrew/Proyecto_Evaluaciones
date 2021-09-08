@@ -15,7 +15,7 @@ public class Unidad {
     
     //Instancias de Clase
     private String nombreUnidad;
-    private String[] preguntasUnidad;
+    private ArrayList<String> preguntasUnidad;
     private String fechaEvaluacion;
     private double[] listaNotas;
     private ArrayList<String> listaRutAlumnos;
@@ -24,8 +24,9 @@ public class Unidad {
     //Constructor
     public Unidad(String nombreUnidad,ArrayList<String> listaRutAlumnos) {
         this.nombreUnidad = nombreUnidad;
-        this.preguntasUnidad = new String [2];
-        this.listaRutAlumnos = listaRutAlumnos;
+        this.preguntasUnidad = new ArrayList<>();
+        this.listaRutAlumnos = new ArrayList<>();
+        this.listaRutAlumnos.addAll(listaRutAlumnos);
         Calendar c = Calendar.getInstance();
         this.fechaEvaluacion = Integer.toString(c.get(Calendar.DATE))+"/"+Integer.toString(c.get(Calendar.MONTH))+"/"+ Integer.toString(c.get(Calendar.YEAR));
     }
@@ -33,11 +34,18 @@ public class Unidad {
     //Metodos
     //Metodos de llenado
     
-    public void llenarPreguntas(String nombreCurso) throws IOException
+    public void addPregunta(String pregunta)
     {
         //se llenan las preguntas con ""pregunta "+(i+1)" solamente para mostrar que se guardan
-        for(int i = 0 ; i < this.preguntasUnidad.length ; i++)
-            this.preguntasUnidad[i]="pregunta "+(i+1);
+        this.preguntasUnidad.add(pregunta);
+    }
+    
+    public ArrayList<String> getPreguntas()
+    {
+        ArrayList<String> listaPreguntas = new  ArrayList<>();
+        for(int i = 0 ; i< this.preguntasUnidad.size(); i++)
+            listaPreguntas.add(this.preguntasUnidad.get(i));
+        return listaPreguntas;
     }
     
     public void llenarNotas() throws IOException
@@ -57,16 +65,6 @@ public class Unidad {
             this.listaNotas[i] = posibleNota;
         }
     }
-    //Metodos de impresion
-    
-    public void mostrarPreguntas(String nombreCurso)
-    {
-        System.out.println("Banco de preguntas de Unidad "+this.nombreUnidad+" de "+ nombreCurso+": ");
-        for(int i = 0 ; i < this.preguntasUnidad.length ; i++)
-            System.out.println("Pregunta N° "+ (i+1) + ": "+ this.preguntasUnidad[i] );
-        System.out.println("\n");
-    }
-    
     public void mostrarNotas(String nombreCurso)
     {
         System.out.println("Notas de Unidad " + this.nombreUnidad + " del curso "+ nombreCurso +" con fecha de " + this.fechaEvaluacion+":");
@@ -91,14 +89,6 @@ public class Unidad {
         this.nombreUnidad = nombreUnidad;
     }
 
-    public String[] getPreguntasUnidad() {
-        return preguntasUnidad;
-    }
-
-    public void setPreguntasUnidad(String[] preguntasUnidad) {
-        this.preguntasUnidad = preguntasUnidad;
-    }
-
     public String getFechaEvaluacion() {
         return fechaEvaluacion;
     }
@@ -110,17 +100,11 @@ public class Unidad {
         return listaRutAlumnos;
     }
 
-    public void setListaRutAlumnos(ArrayList<String> listaRutAlumnos) {
-        this.listaRutAlumnos = listaRutAlumnos;
-    }
 
     public double[] getListaNotas() {
         return listaNotas;
     }
 
-    public void setListaNotas(double[] listaNotas) {
-        this.listaNotas = listaNotas;
-    }
     public void setListaNotas(int[] listaNotas) {
         for (int i=0; i < listaNotas.length; i++){
             this.listaNotas[i] = (double)listaNotas[i];

@@ -1,233 +1,224 @@
 package com.mycompany.proyectopoo;
 import java.io.*;
-import java.util.ArrayList;
+import java.util.Scanner;
 public class Proyecto {
     
     public static void main(String [] arg) throws IOException 
     {
-            //Se crea un arrayList para guardar los cursos que se leeran del csv en la funcion leerParametroCSV
-        ArrayList<String> listaCursos;
-        listaCursos = leerParametroCSV("Curso");
-        Curso[] cursos = new Curso[listaCursos.size()];
+        Scanner lector = new Scanner(System.in);
+        int opcion;
+        int opcion2;
+        String nombreCurso=null;
+        String nombreAsig=null;
+        String nombreUnidad=null;
+        String pregunta=null;
+        boolean atras;
+        boolean salir = true;
         
-            //se crean los cursos y se llenan los cursos
-        crearCursos(cursos,listaCursos);    
-        llenarCursos(cursos);
+        ManejoDeCursos c = new ManejoDeCursos();
+        c.crearCursos();
         
-            //se muestran los cursos
-        mostrarCursos(cursos);
-        
-            //se llenan las Unidades
-        llenarPreguntasUnidades(cursos);
-        llenarNotasUnidades(cursos);
-        
-            //se muestran los bancos de preguntas y las notas de las unidades
-        mostrarPreguntasUnidades(cursos);
-        mostrarNotasUnidades(cursos); 
-        
-        
-        crearMapAlumnos(cursos);
-        mostrarNotasAlumnos(cursos);
-    }
-    
-        /*Funcion que lee desde el csv un parametro(Rut, Alumnos, Curso, cantAsignaturas) y retorna un arrayList 
-          con los elementos del parametro sin repetirse
-          Ej: leerParametroCSV("Curso",ruta) =  ArrayList<"Tercero","Primero","Segundo","Cuarto","Quinto">*/
-    public static ArrayList<String>  leerParametroCSV(String parametroALeer)
-    {
-        ArrayList<String> listaParametros = new ArrayList<>();
-        BufferedReader br = null;
-        try{
-                // se crea un BufferedReader(br) que leera el FileReader(fr) del archivo ubicado en la rutaArchivo
-            br = new BufferedReader(new FileReader ("Alumnos.csv"));
+        do{
             
-            String linea = null;
-            
-                //se busca la columna que contiene los parametros a guardar en el ArrayList
-            int columna = buscarColumnaCSV(br.readLine(),parametroALeer); 
-            
-                //se leerá hasta la ultima linea del archivo
-            while((linea = br.readLine()) != null)
-            {
-                String[] partes = linea.split(";");
-                
-                    /*si la lista de parametros está vacía, se le añade al ArrayList el primer parametro ubicado en 
-                      la columna correspondiete*/
-                if (listaParametros.isEmpty())
-                    listaParametros.add(partes[columna]);
-                else{
-                    /*si la lista de parametros no está vacía, se pregunta si el parametro ya se encuentra en el
-                      ArrayList, si no está, se añade al ArrayList el parametro ubicado en la columna correspondiete*/
-                    if (listaParametros.contains(partes[columna])!=true){
-                        listaParametros.add(partes[columna]);
-                    }
-                }
-            }
-        }catch (IOException e){
-            e.printStackTrace();
-        }finally{
-                //se cierra el archivo
-            try{                    
-                if( null != br )
-                br.close();
-            }catch (Exception e2){ 
-                e2.printStackTrace();
-            }
-        }
-        return listaParametros;
-    }
-    
-        /*Funcion que lee desde el archivo csv un parametro(Ej: Rut, Alumnos, cantAsignaturas) del curso especificado y 
-          lo retorna como lista con los elementos del parametro sin repetirse
-            Ej: leerParametroCursoCSV("Quinto", "Rut",ruta) retorna ArrayList<"10987546-2","20324521-k">
-        */
-    public static ArrayList<String> leerParametroCursoCSV(String nombreCurso, String parametro) {
-        
-        ArrayList<String> listaParametro = new ArrayList<>();
-        FileReader fr = null;
-        BufferedReader br = null;
-        try{
-                // se crea un BufferedReader(br) que leera el FileReader(fr) del archivo ubicado en la rutaArchivo
-            br = new BufferedReader(new FileReader ("Alumnos.csv"));
-            
-                // se lee la primera linea del archivo, esta contiene el parametro que identifica a los valores la columna
-            String linea = br.readLine();
-            
-                // se buscan las dos columnas para recorrer y buscar los datos
-            int columnaParametro= buscarColumnaCSV(linea,parametro); 
-            int columnaCurso = buscarColumnaCSV(linea,"Curso"); 
-            
-            while((linea = br.readLine()) != null)
-            {  
-                String[] partes = linea.split(";");
-                
-                    /*se llenará el ArrayList listaParametro con un parametro ssi la linea leída posee el nombre del curso buscado 
-                      en la parte correspondiente (partes[columnaCurso]) y el ArrayList no posea un parametro con el mismo valor
-                    */
-                if(partes[columnaCurso].equals(nombreCurso)) 
-                    if (listaParametro.isEmpty())
-                        listaParametro.add(partes[columnaParametro]);
-                    else{
-                        if (listaParametro.contains(partes[columnaParametro])!=true){
-                        listaParametro.add(partes[columnaParametro]);
+            // Menu
+            System.out.println("MENU PRINCIPAL");
+            System.out.println("1. Impresión de datos");
+            System.out.println("2. Llenado de datos");
+            System.out.println("0. Salir");
+            System.out.println("Ingrese opción: ");
+            opcion = lector.nextInt(); // Ingresan opcion            
+            lector.nextLine(); // Limpiar '\n'
+            switch (opcion){
+                case 0: 
+                    salir=false;
+                    break;
+                case 1: // Impresion de datos
+                    atras=true;
+                    do{
+                        // Menu
+                        System.out.print("\n");
+                        System.out.println("Opcion: IMPRESION DE DATOS");
+                        System.out.println("1. Mostrar cursos");
+                        System.out.println("2. Mostrar Alumnos de TODOS los cursos");
+                        System.out.println("3. Mostrar Alumnos de curso especifico");
+                        System.out.println("4. Mostrar Asignaturas y Unidades de TODOS los cursos");
+                        System.out.println("5. Mostrar Asignaturas y Unidades de curso especifico");
+                        System.out.println("0. Atras"); 
+                        System.out.println("Ingrese opción: ");
+                        opcion2 = lector.nextInt();         
+                        lector.nextLine();
+                        System.out.print("\n");
+                        switch (opcion2){
+                            case 0: 
+                                atras=false;
+                                break;
+                            case 1:
+                                System.out.println("Cursos en el sistema:");
+                                c.mostrarNombreCursos();
+                                break;
+                            case 2: 
+                                System.out.println("Alumnos en el sistema:");
+                                c.mostrarTodosAlumnos();
+                                break;
+                            case 3:
+                                do
+                                {
+                                    System.out.println("Cursos en el sistema:");
+                                    c.mostrarNombreCursos();
+                                    System.out.print("\n");
+                                    System.out.println("Ingrese nombre del curso:");
+                                    nombreCurso=lector.nextLine();
+                                }while(c.validarCurso(nombreCurso)==false);
+                                c.mostrarAlumnosCurso(nombreCurso);
+                                break;
+                            case 4: 
+                                c.mostrarTodosAsigYUnidades();
+                                break;
+                            case 5: 
+                                do
+                                {
+                                    System.out.println("Cursos en el sistema:");
+                                    c.mostrarNombreCursos();
+                                    System.out.print("\n");
+                                    System.out.println("Ingrese nombre del curso:");
+                                    nombreCurso=lector.nextLine();
+                                }while(c.validarCurso(nombreCurso)==false);
+                                c.mostrarAsigYUnidadesCurso(nombreCurso);
+                                break;
+                            default:
+                                System.out.println("Ingrese opcion valida:");
+                                opcion2 = lector.nextInt();
                         }
-                    }
+                    }while(atras);
+                    break;
+                case 2: // Llenado
+                    atras=true;
+                    do{
+                        // Menu
+                        System.out.print("\n");
+                        System.out.println("Opcion: LLENADO DE DATOS");
+                        System.out.println("1. Ingresar banco de preguntas");
+                        System.out.println("0. Atras"); 
+                        System.out.println("Ingrese opción: ");
+                        opcion2 = lector.nextInt();         
+                        lector.nextLine();
+                        System.out.print("\n");
+                        switch (opcion2){
+                            case 0: 
+                                atras=false;
+                                break;
+                            case 1:
+                                System.out.println("Para ingresar un banco de preguntas, debe especificar Curso, Asigantura y Unidad de las preguntas");
+                                do
+                                {
+                                    System.out.println("Cursos en el sistema:");
+                                    c.mostrarNombreCursos();
+                                    System.out.print("\n");
+                                    System.out.println("Ingrese Curso de la Asignatura:");
+                                    nombreCurso = lector.nextLine();  
+                                    System.out.print("\n");
+                                }while(c.validarCurso(nombreCurso)==false);
+                        
+                                do
+                                {
+                                    System.out.println("Asginaturas del Curso "+ nombreCurso+":");
+                                    c.mostrarNombresAsig(nombreCurso);
+                                    System.out.print("\n");
+                                    System.out.println("Ingrese Asginatura de la Unidad:");
+                                    nombreAsig = lector.nextLine();
+                                    System.out.print("\n");
+                                }while(c.validarAsignatura(nombreCurso,nombreAsig)==false);
+                                
+                                do
+                                {
+                                    System.out.println("Unidades de la Asignatura "+ nombreAsig+":");
+                                    c.mostrarNombresUnidades(nombreCurso,nombreAsig); 
+                                    System.out.print("\n");
+                                    System.out.println("Ingrese Unidad de la Asignatura:");
+                                    nombreUnidad = lector.nextLine();
+                                }while(c.validarUnidad(nombreCurso,nombreAsig,nombreUnidad)==false);
+                                atras=true;
+                                do{
+                                    // subMenu
+                                    System.out.print("\n");
+                                    System.out.println("Opcion: Llenado banco de preguntas de " +nombreCurso+"-"+ nombreAsig+"-"+nombreUnidad);
+                                    System.out.println("1. Ingresar pregunta");
+                                    System.out.println("2. Mostrar banco de preguntas");
+                                    System.out.println("0. Atras"); 
+                                    System.out.println("Ingrese opción: ");
+                                    opcion2 = lector.nextInt();         
+                                    lector.nextLine();
+                                    System.out.print("\n");
+                                    switch (opcion2){
+                                        case 0: 
+                                            atras=false;
+                                            break;
+                                        case 1:
+                                            String respuesta;
+                                            do
+                                            {
+                                                System.out.println("Ingrese pregunta a añadir:");
+                                                pregunta=lector.nextLine();
+                                                System.out.print("\n");
+                                                do
+                                                {
+                                                    System.out.println("¿Desea añadir " + "'"+pregunta+"'?");
+                                                    System.out.println("Ingrese opción: (Si/No)");
+                                                    respuesta=lector.nextLine().toLowerCase();
+                                                }while((respuesta.equals("no")!=true)&&(respuesta.equals("si")!=true));
+                                            }while (respuesta.equals("no"));
+                                            
+                                            c.addPreguntaUnidad(nombreCurso,nombreAsig,nombreUnidad,pregunta,true);
+                                            break;
+                                        case 2:
+                                            c.mostrarBancoPreguntasUnidad(nombreCurso,nombreAsig,nombreUnidad);
+                                            break;
+                                        default:
+                                            System.out.println("Ingrese opcion valida:");
+                                            opcion2 = lector.nextInt();
+                                    }
+                                }while(atras);
+                                break;
+                            default:
+                                System.out.println("Ingrese opcion valida");
+                                opcion2 = lector.nextInt();
+                        }
+                    }while(atras);
+                    
+                    break;
+                default:
+                    System.out.println("Ingrese opción valida: ");
+                    opcion = lector.nextInt();
             }
-        }catch (IOException e){
-            e.printStackTrace();
-        }finally{
-                //se cierra el archivo
-            try{                    
-                if( null != br )
-                    br.close();
-            }catch (Exception e2){ 
-                e2.printStackTrace();
-            }
-        }
-        return listaParametro;
+            
+        }while(salir);
     }
     
-        // funcion que recibe como parametro la primera linea del csv y la columna que se busca en el archivo, retorna el numero de la columna
-        // Ej: buscarColumnaCSV(primeraLinea,"Curso") retorna 2
-    public static int buscarColumnaCSV(String linea,String columnaBuscada) {
-        int columna = 0;
-        
-            /*la linea se le aplica el metodo split(";") ya que es un archivo separado por comas (CSV)
-              separandola en partes, cada parte es un parametro.
-            Ej: linea = Rut;Curso;Asignatura | partes[0]=Rut , partes[1]=Curso ,partes[2]=Asignatura
-            */
-        String[] partes = linea.split(";");
-        for (int i = 0 ; i < partes.length ; i++){
-            if (partes[i].equals(columnaBuscada)){
-                columna=i;
-                break;
-            }
-        }
-        return columna;
-    }
-
-    private static void crearCursos(Curso[] cursos, ArrayList<String> listaCursos) {
-            //se crean los cursos y se ingresan al la lista de objetos de tipo Curso       
-        for (int i = 0; i < cursos.length; i++ ){
-            Curso curso = new Curso(listaCursos.get(i),leerParametroCursoCSV(listaCursos.get(i),"Rut"));
-            cursos[i] = curso;
-        }
-    }
-    
-    private static void llenarCursos(Curso[] cursos)throws IOException {
-            //se llenan los cursos con sus respectivas Asignaturas y Unidades de estas
-        for (int i = 0; i < cursos.length; i++ )
-            cursos[i].llenarCurso(leerParametroCursoCSV(cursos[i].getNombreCurso(), "Asignaturas"),leerParametroCursoCSV(cursos[i].getNombreCurso(),"Unidades"));
-    }
-    private static void mostrarCursos(Curso[] cursos) {
-            //se muestra la informacion de los cursos
-        for (int i = 0; i < cursos.length; i++ )
-            cursos[i].mostrarCurso();
-    }
-    
-    private static void llenarPreguntasUnidades(Curso[] cursos) throws IOException 
-    {
-            //llena las preguntas de las unidades de las Asignaturas(j)  de los cursos(i)
-        for (int i = 0; i < cursos.length; i++ ){
-            for(int j = 0; j < cursos[i].getListaAsignaturas().size(); j++ )
-                cursos[i].getListaAsignaturas().get(j).llenarPreguntasUnidad(cursos[i].getNombreCurso());
-        }
-    }
-
-    private static void llenarNotasUnidades(Curso[] cursos) throws IOException {
-            //llena las notas de las unidades de las Asignaturas(j)  de los cursos(i)
-        for (int i = 0; i < cursos.length; i++ ){
-            for(int j = 0; j < cursos[i].getListaAsignaturas().size(); j++ )
-                cursos[i].getListaAsignaturas().get(j).llenarNotasUnidad();
-        }
-    }
-
-    private static void mostrarPreguntasUnidades(Curso[] cursos) {
-            //muestra las preguntas de las unidades(k) de las Asignaturas(j)  de los cursos(i)
-        for (int i = 0; i < cursos.length; i++ ){
-            for(int j = 0; j < cursos[i].getListaAsignaturas().size(); j++ )
-            {
-                for(int k = 0; k < cursos[i].getListaAsignaturas().get(j).getListaUnidades().size(); k++ )
-                    cursos[i].getListaAsignaturas().get(j).getListaUnidades().get(k).mostrarPreguntas(cursos[i].getNombreCurso());
-            }
-        }
-    }
-
-    private static void mostrarNotasUnidades(Curso[] cursos) {
-            //muestra las notas de las unidades(k) de las Asignaturas(j)  de los cursos(i)
-        for (int i = 0; i < cursos.length; i++ ){
-            for(int j = 0; j < cursos[i].getListaAsignaturas().size(); j++ )
-            {
-                for(int k = 0; k < cursos[i].getListaAsignaturas().get(j).getListaUnidades().size(); k++ )
-                    cursos[i].getListaAsignaturas().get(j).getListaUnidades().get(k).mostrarNotas(cursos[i].getNombreCurso());
-            }
-        }
-    } 
-
-    private static void crearMapAlumnos(Curso[] cursos) {
-        for (int i = 0; i < cursos.length; i++ ){
-            for (int z = 0 ; z < cursos[i].getListaRutAlumnos().size() ; z++)
-            {
-                ArrayList<String> notasAlumno= new ArrayList<>();
-                for(int j = 0; j < cursos[i].getListaAsignaturas().size(); j++ )
-                {
-                    for(int k = 0; k < cursos[i].getListaAsignaturas().get(j).getListaUnidades().size(); k++ )
-                    {
-                        double[]listaNotas = cursos[i].getListaAsignaturas().get(j).getListaUnidades().get(k).getListaNotas();
-                        notasAlumno.add(Double.toString(listaNotas[z]));
-                    } 
-                }
-                cursos[i].guardarNotasCurso(cursos[i].getListaRutAlumnos().get(z), notasAlumno);
-            }
-        }
-    }
-
-    private static void mostrarNotasAlumnos(Curso[] cursos) {
-        for (int i = 0; i < cursos.length; i++ )
-        {
-            System.out.println("Notas curso "+cursos[i].getNombreCurso()+": ");
-            for (int j = 0 ; j < cursos[i].getListaRutAlumnos().size() ; j++)
-                System.out.println("Notas " + cursos[i].getListaRutAlumnos().get(j) + ": " + cursos[i].getNotasAlumnos().get(cursos[i].getListaRutAlumnos().get(j)));
-        }
-    }
 }
+/*
+modelo de submenus
+atras=true;
+do{
+    // subMenu
+    System.out.print("\n");
+    System.out.println("Opcion:");
+    System.out.println("1. Ingresar banco de preguntas");
+    System.out.println("0. Atras"); 
+    opcion2 = lector.nextInt();         
+    lector.nextLine();
+    System.out.print("\n");
+    switch (opcion2){
+        case 0: 
+            atras=false;
+            break;
+        case 1:
+            break;
+        default:
+            System.out.println("Ingrese opcion valida:");
+            opcion2 = lector.nextInt();
+    }
+}while(atras);
+break;
+
+
+*/

@@ -8,7 +8,6 @@ public class Asignatura {
     private String nombreAsignatura;
     private ArrayList<Unidad> listaUnidades;
     private ArrayList<String> listaRutAlumnos;
-    BufferedReader lectorTeclado = new BufferedReader(new InputStreamReader (System.in));
     
     //Constructor
     public Asignatura(String nombreAsignatura,String[] temasUnidades,ArrayList<String> listaRutAlumnos) {
@@ -30,30 +29,34 @@ public class Asignatura {
             this.listaUnidades.get(i).llenarNotas();
     }
     
-    public void llenarPreguntasUnidad(String nombreCurso) throws IOException
+    public void addPreguntaUnidad(String nombreUnidad, String pregunta)
     {
-        for (int i = 0 ; i < this.listaUnidades.size() ; i++)
-            this.listaUnidades.get(i).llenarPreguntas(nombreCurso);
-    }
-    
-    //Metodos de impresion
-    public void mostrarListaUnidades()
-    {
-        for (int i = 0 ; i < this.listaUnidades.size() ; i++)
-            System.out.println("Unidad "+ (i+1) + ": "+this.listaUnidades.get(i).getNombreUnidad());
-    }
-    public void mostrarListaUnidades(int cantAMostrar)
-    {
-        if (cantAMostrar <= this.listaUnidades.size() && cantAMostrar>0)
+        for(int k = 0; k < this.listaUnidades.size(); k++ )
         {
-            while(cantAMostrar-1>=0)
-            {
-                for (int i = 0 ; i < this.listaUnidades.size() ; i++)
-                    System.out.println("Unidad "+ (i+1) + ": "+this.listaUnidades.get(i).getNombreUnidad());
-            }
+            if((this.listaUnidades.get(k).getNombreUnidad()).toLowerCase().equals(nombreUnidad.toLowerCase()))
+            this.listaUnidades.get(k).addPregunta(pregunta);
         }
     }
     
+    
+    public ArrayList <String> getNombreUnidades()
+    {
+        ArrayList <String> listaNombresUnidades= new ArrayList <String>();
+        for (int i = 0 ; i < this.listaUnidades.size() ; i++)
+            listaNombresUnidades.add(this.listaUnidades.get(i).getNombreUnidad());
+        return listaNombresUnidades;
+    }
+    
+    public ArrayList<String> getListaPreguntasUnidad(String nombreUnidad) 
+    {
+        ArrayList <String> listaPreguntas= new ArrayList <String>();
+        for(int k = 0; k < this.listaUnidades.size(); k++ )
+        {
+            if((this.listaUnidades.get(k).getNombreUnidad()).toLowerCase().equals(nombreUnidad.toLowerCase()))
+            listaPreguntas = this.listaUnidades.get(k).getPreguntas();
+        }
+        return listaPreguntas;
+    }
     
     //Getters y Setters
     public String getNombreAsignatura() {
@@ -64,20 +67,7 @@ public class Asignatura {
         this.nombreAsignatura = nombreAsignatura;
     }
 
-    public ArrayList<Unidad> getListaUnidades() {
-        return listaUnidades;
-    }
-
-    public void setListaUnidades(ArrayList<Unidad> listaUnidades) {
-        this.listaUnidades = listaUnidades;
-    }
-
-    public ArrayList<String> getListaRutAlumnos() {
-        return listaRutAlumnos;
-    }
-
-    public void setListaRutAlumnos(ArrayList<String> listaRutAlumnos) {
-        this.listaRutAlumnos = listaRutAlumnos;
-    }
     
+
+
 }
