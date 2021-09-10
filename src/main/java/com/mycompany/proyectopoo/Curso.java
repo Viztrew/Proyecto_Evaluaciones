@@ -48,6 +48,11 @@ public class Curso {
         this.mapaNotasAlumnos.put(rut, notas);
     }
     
+     public void guardarNotasCurso(ArrayList<String> notas, String rut)
+    {
+        this.mapaNotasAlumnos.put(rut, notas);
+    }
+    
     public ArrayList<String> getListaRuts ()
     {
         ArrayList <String> listaRuts = new ArrayList <String>();
