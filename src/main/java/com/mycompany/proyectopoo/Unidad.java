@@ -110,4 +110,10 @@ public class Unidad {
             this.listaNotas[i] = (double)listaNotas[i];
         }
     }
+    
+    public void setListaNotas(double[] listaNotas) {
+        for (int i=0; i < listaNotas.length; i++){
+            this.listaNotas[i] = (double)listaNotas[i];
+        }
+    }
 }
