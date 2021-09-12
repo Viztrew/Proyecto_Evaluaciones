@@ -7,28 +7,60 @@ import static com.mycompany.proyectopoo.ManejoDeCSV.*;
 public class ManejoDeCursos {
          //Se crea un arrayList para guardar los cursos que se leeran del csv en la funcion leerParametroCSV
     private ArrayList<String> listaCursos;
-    private Curso[] cursos;
+    private ArrayList<Curso> cursos;
         
     ManejoDeCursos(){
-        this.listaCursos = leerParametroCSV("Curso","Alumnos.csv");
-        this.cursos = new Curso[listaCursos.size()];
+        this.listaCursos = leerParametroCSV("Curso","Cursos.csv");
+        this.cursos = new ArrayList<>();
     }
         
-        //se crean los cursos y se ingresan al la lista de objetos de tipo Curso       
+        //se crean los objetos cursos segun los datos guardados en el csv  
     public void crearCursos()throws IOException  {
-            
-        for (int i = 0; i < this.cursos.length; i++ ){
-            /*como las asignaturas y las unidades se guardan de manera diferente en el csv se deben separan en partes
-              las asignaturas se separan una vez por comas y las unidades se separan dos veces, la primera por espacios
-              la segunda por comas*/
-            ArrayList<String> listaAsig = leerParametroCursoCSV(this.listaCursos.get(i), "Asignaturas","Alumnos.csv");
-            ArrayList<String> listaUnid = leerParametroCursoCSV(this.listaCursos.get(i),"Unidades","Alumnos.csv");
-            Curso curso = new Curso(this.listaCursos.get(i),leerParametroCursoCSV(this.listaCursos.get(i),"Rut","Alumnos.csv"), listaAsig.get(0).split(","), listaUnid.get(0).split(" "));
-            
-            this.cursos[i] = curso;
+        for (int i = 0; i < this.listaCursos.size(); i++ ){
+            Curso curso = null;
+            String nombreCurso = this.listaCursos.get(i);
+            switch(tipoLlenado(nombreCurso)){
+                
+                case 1: //Solamente el nombre del curso esta guardado en el csv
+                    curso = new Curso(nombreCurso);
+                    break;
+                case 2: //Solamente el nombre del curso y al menos un alumno estan guardados en los csv
+                    curso = new Curso(nombreCurso,leerParametroCursoCSV(nombreCurso,"Rut","Alumnos.csv"));
+                    break;
+                case 3: //Solamente el nombre del curso, al menos una asignatura y una unidad de dicha asignatura estan guardados en los csv
+                    curso = new Curso(nombreCurso,leerParametroCursoCSV(nombreCurso, "Asignaturas","Cursos.csv").get(0).split(","),leerParametroCursoCSV(nombreCurso,"Unidades","Cursos.csv").get(0).split(" "));   
+                    break;
+                case 4: //El curso tiene guardado al menos un alumno, asignatura y una unidad de dicha asignatura
+                    curso = new Curso(nombreCurso,leerAlumnosCursoCSV(nombreCurso,"Alumnos.csv"), leerParametroCursoCSV(nombreCurso, "Asignaturas","Cursos.csv").get(0).split(","), leerParametroCursoCSV(nombreCurso,"Unidades","Cursos.csv").get(0).split(" "));
+                    break;
+            }
+            this.cursos.add(curso);
         }
-        for (int i = 0; i < this.cursos.length; i++ )
-            leerBancoDePreguntas(cursos[i]);
+        
+        //se leen los bancos de preguntas (si tienen) de las unidades de cada asignatura de cada curso 
+        for (int i = 0; i < this.cursos.size(); i++ )
+            leerBancoDePreguntas(cursos.get(i));
+        crearMapAlumnos(cursos);
+    }
+    
+        //funcion que retorna un int que determina que constructor se utiliza para el objeto curso, según los datos presentes en los csv
+    public int tipoLlenado(String nombreCurso)
+    {
+        int caso;
+        if (leerAlumnosCursoCSV(nombreCurso,"Alumnos.csv").isEmpty()){
+            if (leerParametroCursoCSV(nombreCurso, "Asignaturas","Cursos.csv").get(0).equals("none")){
+                caso=1;
+            }else{
+                caso=3;
+            }
+        }else{
+            if (leerParametroCursoCSV(nombreCurso, "Asignaturas","Cursos.csv").get(0).equals("none")){
+                caso=2;
+            }else{
+                caso=4;
+            }
+        }
+        return caso;
     }
     
     private void leerBancoDePreguntas(Curso curso) {
@@ -55,20 +87,25 @@ public class ManejoDeCursos {
         //se muestra la informacion de los cursos
     public void mostrarNombreCursos()
     {
-        for (int i = 0; i < this.cursos.length; i++ ){
-            System.out.println(this.cursos[i].getNombreCurso());
+        for (int i = 0; i < this.cursos.size(); i++ ){
+            System.out.println(this.cursos.get(i).getNombreCurso());
         }
     }
     
     public void mostrarNombresAsig(String nombreCurso)
     {
-        for (int i = 0; i < this.cursos.length; i++ ){
-            if ((cursos[i].getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
+        for (int i = 0; i < this.cursos.size(); i++ ){
+            if ((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
             {
-                ArrayList <String> listaNombresAsig = cursos[i].getListaNombresAsig();
-                for(int j = 0; j < listaNombresAsig.size(); j++ )
+                ArrayList <String> listaNombresAsig = cursos.get(i).getListaNombresAsig();
+                if (listaNombresAsig.isEmpty()){
+                    System.out.println("El Curso "+ this.cursos.get(i).getNombreCurso() + " no tiene Asignaturas registradas");
+                }else
+                {
+                    for(int j = 0; j < listaNombresAsig.size(); j++ )
                     System.out.println("Asignatura "+(j+1)+":"+listaNombresAsig.get(j));
                 return;
+                }
             }
         }
     }
@@ -76,18 +113,18 @@ public class ManejoDeCursos {
     public void mostrarNombresUnidades(String nombreCurso,String nombreAsig)
     {
         
-        for (int i = 0; i < this.cursos.length; i++ )
+        for (int i = 0; i < this.cursos.size(); i++ )
         {
-            if ((cursos[i].getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
+            if ((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
             {
                 if (validarAsignatura(nombreCurso,nombreAsig))
                 {
-                    ArrayList <String> listaNombresAsig = cursos[i].getListaNombresAsig();
+                    ArrayList <String> listaNombresAsig = cursos.get(i).getListaNombresAsig();
                     for(int j = 0; j < listaNombresAsig.size(); j++ )
                     {
                         if((listaNombresAsig.get(j)).toLowerCase().equals(nombreAsig.toLowerCase()))
                         {
-                            ArrayList <String> listaNombresUnidades = this.cursos[i].getListaNombresUnidades(listaNombresAsig.get(j));
+                            ArrayList <String> listaNombresUnidades = this.cursos.get(i).getListaNombresUnidades(listaNombresAsig.get(j));
                             for(int k = 0; k < listaNombresUnidades.size(); k++ )
                             System.out.println("Unidad "+(k+1)+": " +listaNombresUnidades.get(k) );
                         }
@@ -99,47 +136,66 @@ public class ManejoDeCursos {
     }
     
     public void mostrarTodosAlumnos() {
-        for (int i = 0; i < this.cursos.length; i++ )
+        for (int i = 0; i < this.cursos.size(); i++ )
         {
-            System.out.println("Alumnos de " + cursos[i].getNombreCurso()+ ": ");
-            ArrayList<String> rutsAlumnos = cursos[i].getListaRuts();
-            for(int j=0 ; j<rutsAlumnos.size(); j++)
-                System.out.println("Alumno " + (j+1) + ": " + rutsAlumnos.get(j));
+            System.out.println("Alumnos de " + cursos.get(i).getNombreCurso()+ ": ");
+            ArrayList<String> rutsAlumnos = cursos.get(i).getListaRuts();
+            if (rutsAlumnos.isEmpty())
+            {
+                System.out.println("El curso " + this.cursos.get(i).getNombreCurso() + " no tiene alumnos registrados.");
+            }else
+            {
+                for(int j=0 ; j<rutsAlumnos.size(); j++)
+                    System.out.println("Alumno " + (j+1) + ": " + rutsAlumnos.get(j));
+            }
             System.out.print("\n");
         }
     }
     
     public void mostrarAlumnosCurso(String nombreCurso)
     {
-        if(validarCurso(nombreCurso))
+        for (int i = 0; i < this.cursos.size() ; i++ )
         {
-            for (int i = 0; i < this.cursos.length; i++ )
+            if ((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
             {
-                if ((cursos[i].getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
+                System.out.println("Alumnos de " + cursos.get(i).getNombreCurso()+ ": ");
+                ArrayList<String> rutsAlumnos = cursos.get(i).getListaRuts();
+                if (rutsAlumnos.isEmpty())
                 {
-                    System.out.println("Alumnos de " + cursos[i].getNombreCurso()+ ": ");
-                    ArrayList<String> rutsAlumnos = cursos[i].getListaRuts();
+                    System.out.println("El curso " + this.cursos.get(i).getNombreCurso() + " no tiene Alumnos registrados.");
+                }else
+                {
                     for(int j=0 ; j<rutsAlumnos.size(); j++)
                         System.out.println("Alumno " + (j+1) + ": " + rutsAlumnos.get(j));
                     return;
                 }
             }
         }
-        
-        System.out.println("'"+nombreCurso+"' no fue encontrado, intente nuevamente." );
     }
             
     public void mostrarTodosAsigYUnidades()
     {
-        for (int i = 0; i < this.cursos.length; i++ ){
-            System.out.println("Asignaturas y Unidades Curso "+ cursos[i].getNombreCurso()+":");
-            ArrayList <String> listaNombresAsig = cursos[i].getListaNombresAsig();
-            for(int j = 0; j < listaNombresAsig.size(); j++ )
+        for (int i = 0; i < this.cursos.size() ; i++ ){
+            System.out.println("Asignaturas y Unidades Curso "+ cursos.get(i).getNombreCurso()+":");
+            ArrayList <String> listaNombresAsig = cursos.get(i).getListaNombresAsig();
+            if (listaNombresAsig.isEmpty())
             {
-                ArrayList <String> listaNombresUnidades = this.cursos[i].getListaNombresUnidades(listaNombresAsig.get(j));
-                System.out.println("Asignatura "+(j+1)+":"+listaNombresAsig.get(j));
-                for(int k = 0; k < listaNombresUnidades.size(); k++ )
-                    System.out.println("Unidad "+(k+1)+": " +listaNombresUnidades.get(k) );
+                System.out.println("El Curso "+ this.cursos.get(i).getNombreCurso() + " no tiene Asignaturas registradas");
+            }else
+            {
+                for(int j = 0; j < listaNombresAsig.size(); j++ )
+                {
+                    System.out.println("Asignatura "+(j+1)+": "+listaNombresAsig.get(j));
+                    ArrayList <String> listaNombresUnidades = this.cursos.get(i).getListaNombresUnidades(listaNombresAsig.get(j));
+                    if (listaNombresUnidades.isEmpty())
+                    {
+                        System.out.println("La Asignatura "+ listaNombresAsig.get(j) + " no tiene Unidades registradas");
+                    }else
+                    {
+                        for(int k = 0; k < listaNombresUnidades.size(); k++ )
+                            System.out.println("Unidad "+(k+1)+": " +listaNombresUnidades.get(k) );
+                    }
+                }
             }
             System.out.print("\n");
         }
@@ -148,63 +204,75 @@ public class ManejoDeCursos {
     public void mostrarAsigYUnidadesCurso(String nombreCurso)
     {
         
-        for (int i = 0; i < this.cursos.length; i++ )
+        for (int i = 0; i < this.cursos.size() ; i++ )
         {
-            if ((cursos[i].getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
+            if ((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
             {
-                System.out.println("Asignaturas y Unidades Curso "+ cursos[i].getNombreCurso()+":");
-                ArrayList <String> listaNombresAsig = cursos[i].getListaNombresAsig();
-                for(int j = 0; j < listaNombresAsig.size(); j++ )
+                System.out.println("Asignaturas y Unidades Curso "+ cursos.get(i).getNombreCurso()+":");
+                ArrayList <String> listaNombresAsig = cursos.get(i).getListaNombresAsig();
+               if (listaNombresAsig.isEmpty())
                 {
-                    ArrayList <String> listaNombresUnidades = this.cursos[i].getListaNombresUnidades(listaNombresAsig.get(j));
-                    System.out.println("Asignatura "+(j+1)+":"+listaNombresAsig.get(j));
-                    for(int k = 0; k < listaNombresUnidades.size(); k++ )
-                        System.out.println("Unidad "+(k+1)+": " +listaNombresUnidades.get(k) );
+                    System.out.println("El Curso "+ this.cursos.get(i).getNombreCurso() + " no tiene Asignaturas registradas");
+                }else
+                {
+                    for(int j = 0; j < listaNombresAsig.size(); j++ )
+                    {
+                        System.out.println("Asignatura "+(j+1)+":"+listaNombresAsig.get(j));
+                        ArrayList <String> listaNombresUnidades = this.cursos.get(i).getListaNombresUnidades(listaNombresAsig.get(j));
+                        if (listaNombresUnidades.isEmpty())
+                        {
+                            System.out.println("La Asignatura "+ listaNombresAsig.get(j) + " no tiene Unidades registradas");
+                        }else
+                        {
+                            for(int k = 0; k < listaNombresUnidades.size(); k++ )
+                                System.out.println("Unidad "+(k+1)+": " +listaNombresUnidades.get(k) );
+                        }
+                        return;
+                    }
                 }
-                return;
             }
         }
     }
     
     public boolean validarCurso(String nombreCurso)
     {
-        for (int i = 0; i < this.cursos.length; i++ ){
-            if((cursos[i].getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
+        for (int i = 0; i < this.cursos.size() ; i++ ){
+            if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
                 return true;
         }
-        System.out.println("'"+nombreCurso+"' no fue encontrado, intente nuevamente." );
+        System.out.println("'"+nombreCurso+"' no fue encontrado en el sistema." );
         System.out.print("\n");
         return false;
     }
     
     public boolean validarAsignatura(String nombreCurso,String nombreAsig)
     {
-        for (int i = 0; i < this.cursos.length; i++ ){
-            if((cursos[i].getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
+        for (int i = 0; i < this.cursos.size() ; i++ ){
+            if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
             {
-                ArrayList<String> nombresAsignaturas = cursos[i].getListaNombresAsig();
+                ArrayList<String> nombresAsignaturas = cursos.get(i).getListaNombresAsig();
                 for (int j = 0; j < nombresAsignaturas.size(); j++ ){
                     if((nombresAsignaturas.get(j)).toLowerCase().equals(nombreAsig.toLowerCase()))
                         return true;
                 }
             }
         }
-        System.out.println("'"+nombreAsig+"' no fue encontrado en el curso " +nombreCurso+ ", intente nuevamente." );
+        System.out.println("'"+nombreAsig+"' no fue encontrado en el curso " +nombreCurso+ "." );
         System.out.print("\n");
         return false;
     }
     
     public boolean validarUnidad(String nombreCurso,String nombreAsig,String nombreUnidad)
     {
-        for (int i = 0; i < this.cursos.length; i++ ){
-            if((cursos[i].getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
+        for (int i = 0; i < this.cursos.size() ; i++ ){
+            if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
             {
-                ArrayList <String> listaNombresAsig = cursos[i].getListaNombresAsig();
+                ArrayList <String> listaNombresAsig = cursos.get(i).getListaNombresAsig();
                 for(int j = 0; j < listaNombresAsig.size(); j++ )
                 {
                     if((listaNombresAsig.get(j)).toLowerCase().equals(nombreAsig.toLowerCase()))
                     {
-                        ArrayList <String> listaNombresUnidades = this.cursos[i].getListaNombresUnidades(listaNombresAsig.get(j));
+                        ArrayList <String> listaNombresUnidades = this.cursos.get(i).getListaNombresUnidades(listaNombresAsig.get(j));
                         for(int k = 0; k < listaNombresUnidades.size(); k++ )
                         {
                             if((listaNombresUnidades.get(k)).toLowerCase().equals(nombreUnidad.toLowerCase()))
@@ -219,93 +287,129 @@ public class ManejoDeCursos {
         return false;
     }
     
+    public boolean validarAlumnoEnCurso(String nombreCurso, String rutAlumno)
+    {
+        for (int i = 0; i < this.cursos.size() ; i++ )
+        {
+            if ((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
+            {
+                ArrayList<String> rutsAlumnos = cursos.get(i).getListaRuts();
+                for(int j=0 ; j<rutsAlumnos.size(); j++)
+                {
+                    if(rutsAlumnos.get(j).toLowerCase().equals(rutAlumno.toLowerCase()))
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
+    public boolean verificarAsigDeCurso(String nombreCurso)
+    {
+        for (int i = 0; i < this.cursos.size(); i++ ){
+            if ((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
+            {
+                ArrayList <String> listaNombresAsig = cursos.get(i).getListaNombresAsig();
+                if (listaNombresAsig.isEmpty()){
+                    return false;
+                }else
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     public void addPreguntaUnidad(String nombreCurso, String nombreAsig, String nombreUnidad, String pregunta, boolean guardarEnCSV)
     {
-        for (int i = 0; i < this.cursos.length; i++ ){
-            if((cursos[i].getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
-                cursos[i].addPreguntaAsig(nombreAsig, nombreUnidad, pregunta);
+        for (int i = 0; i < this.cursos.size() ; i++ ){
+            if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
+                cursos.get(i).addPreguntaAsig(nombreAsig, nombreUnidad, pregunta);
         }
         if (guardarEnCSV) 
-                guardarPreguntaEnCSV(nombreCurso, nombreAsig, nombreUnidad, pregunta);
+            guardarPreguntaEnCSV(nombreCurso, nombreAsig, nombreUnidad, pregunta);
     }
     
-    void mostrarBancoPreguntasUnidad(String nombreCurso, String nombreAsig, String nombreUnidad) {
-        for (int i = 0; i < this.cursos.length; i++ ){
-            if((cursos[i].getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
+    public void addAlumnoACurso(String nombreCurso, String rutAlumno)
+    {
+        for (int i = 0; i < this.cursos.size() ; i++ ){
+            if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
+            {
+                cursos.get(i).addAlumno(rutAlumno);
+                guardarAlumnoEnCSV(cursos.get(i).getNombreCurso(),rutAlumno);
+            }
+        }
+    }
+            
+    public void mostrarBancoPreguntasUnidad(String nombreCurso, String nombreAsig, String nombreUnidad) {
+        for (int i = 0; i < this.cursos.size() ; i++ ){
+            if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
             {
                 ArrayList <String> listaPreguntas = new ArrayList <String>();
-                listaPreguntas.addAll(cursos[i].getListaPreguntasAsig(nombreAsig, nombreUnidad));
+                listaPreguntas.addAll(cursos.get(i).getListaPreguntasAsig(nombreAsig, nombreUnidad));
                 for (int j = 0 ; j<listaPreguntas.size();j++)
                     System.out.println("Pregunta "+(j+1)+": "+listaPreguntas.get(j));
             }
         }
     }
-    /*
-    public void llenarPreguntasUnidades(Curso[] cursos) throws IOException 
+    public void addCurso(String nombreCurso)
     {
-            //llena las preguntas de las unidades de las Asignaturas(j)  de los cursos(i)
-        for (int i = 0; i < cursos.length; i++ ){
-            for(int j = 0; j < cursos[i].getListaNombresAsig().size(); j++ )
-                cursos[i].getListaNombresAsig().get(j).llenarPreguntasUnidad(cursos[i].getNombreCurso());
-        }
+        
+        cursos.add(new Curso(nombreCurso));
+        this.listaCursos.add(nombreCurso);
+        guardarCursoEnCSV(nombreCurso);
     }
-
-    public void llenarNotasUnidades(Curso[] cursos) throws IOException {
-            //llena las notas de las unidades de las Asignaturas(j)  de los cursos(i)
-        for (int i = 0; i < cursos.length; i++ ){
-            for(int j = 0; j < cursos[i].getListaAsignaturas().size(); j++ )
-                cursos[i].getListaAsignaturas().get(j).llenarNotasUnidad();
-        }
-    }
-
-    public void mostrarPreguntasUnidades(Curso[] cursos) {
-            //muestra las preguntas de las unidades(k) de las Asignaturas(j)  de los cursos(i)
-        for (int i = 0; i < cursos.length; i++ ){
-            for(int j = 0; j < cursos[i].getListaAsignaturas().size(); j++ )
+    public void addAsignaturaACurso(String nombreCurso, String nombreAsig , String nombreUnidad) {
+        for (int i = 0; i < this.cursos.size() ; i++ ){
+            if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
             {
-                for(int k = 0; k < cursos[i].getListaAsignaturas().get(j).getListaUnidades().size(); k++ )
-                    cursos[i].getListaAsignaturas().get(j).getListaUnidades().get(k).mostrarPreguntas(cursos[i].getNombreCurso());
+                cursos.get(i).addAsignatura(nombreAsig,nombreUnidad);
             }
         }
+        guardarAsignaturaEnCSV(nombreCurso,nombreAsig,nombreUnidad);
     }
-
-    public void mostrarNotasUnidades(Curso[] cursos) {
-            //muestra las notas de las unidades(k) de las Asignaturas(j)  de los cursos(i)
-        for (int i = 0; i < cursos.length; i++ ){
-            for(int j = 0; j < cursos[i].getListaAsignaturas().size(); j++ )
+    public void addUnidadAAsignatura(String nombreCurso, String nombreAsig , String nombreUnidad) {
+        for (int i = 0; i < this.cursos.size() ; i++ ){
+            if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
             {
-                for(int k = 0; k < cursos[i].getListaAsignaturas().get(j).getListaUnidades().size(); k++ )
-                    cursos[i].getListaAsignaturas().get(j).getListaUnidades().get(k).mostrarNotas(cursos[i].getNombreCurso());
+                cursos.get(i).addUnidadAsignatura(nombreAsig,nombreUnidad);
             }
         }
-    } 
+        guardarUnidadEnCSV(nombreCurso,nombreAsig,nombreUnidad);
+    }
 
-    public void crearMapAlumnos(Curso[] cursos) {
-        for (int i = 0; i < cursos.length; i++ ){
-            for (int z = 0 ; z < cursos[i].getListaRutAlumnos().size() ; z++)
+    public void crearMapAlumnos(ArrayList<Curso> cursos) {
+        for (int i = 0; i < cursos.size(); i++ ){
+            for (int z = 0 ; z < cursos.get(i).getListaRuts().size() ; z++)
             {
-                ArrayList<String> notasAlumno= new ArrayList<>();
-                for(int j = 0; j < cursos[i].getListaAsignaturas().size(); j++ )
+                ArrayList<Double> notasAlumno= new ArrayList<>();
+                for(int j = 0; j < cursos.get(i).getListaNombresAsig().size(); j++ )
                 {
-                    for(int k = 0; k < cursos[i].getListaAsignaturas().get(j).getListaUnidades().size(); k++ )
+                    for(int k = 0; k < cursos.get(i).getListaNombresUnidades(cursos.get(i).getListaNombresAsig().get(j)).size(); k++ )
                     {
-                        double[]listaNotas = cursos[i].getListaAsignaturas().get(j).getListaUnidades().get(k).getListaNotas();
-                        notasAlumno.add(Double.toString(listaNotas[z]));
-                    } 
+                        ArrayList<Double> listaNotas = cursos.get(i).getListaNotasAsig(cursos.get(i).getListaNombresAsig().get(j), cursos.get(i).getListaNombresUnidades(cursos.get(i).getListaNombresAsig().get(j)).get(k));
+                        notasAlumno.add(listaNotas.get(z));
+                    }
                 }
-                cursos[i].guardarNotasCurso(cursos[i].getListaRutAlumnos().get(z), notasAlumno);
+                cursos.get(i).guardarNotasCurso(cursos.get(i).getListaRuts().get(z), notasAlumno);
+            }
+        } 
+    }
+
+    public void mostrarNotasAlumnos(String nombreCurso) {
+       for (int i = 0; i < this.cursos.size() ; i++ ){
+            if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
+            {
+                ArrayList<String> alumnos = this.cursos.get(i).getListaRuts();
+                for(int j = 0 ; j < alumnos.size(); j++)
+                {
+                    System.out.println("Notas alumno "+alumnos.get(j)+": ");
+                    System.out.println(cursos.get(i).getNotas(alumnos.get(j)));
+                }
             }
         }
     }
 
-    public void mostrarNotasAlumnos(Curso[] cursos) {
-        for (int i = 0; i < cursos.length; i++ )
-        {
-            System.out.println("Notas curso "+cursos[i].getNombreCurso()+": ");
-            for (int j = 0 ; j < cursos[i].getListaRutAlumnos().size() ; j++)
-                System.out.println("Notas " + cursos[i].getListaRutAlumnos().get(j) + ": " + cursos[i].getNotasAlumnos().get(cursos[i].getListaRutAlumnos().get(j)));
-        }
-    }*/
+    
 
 
     
