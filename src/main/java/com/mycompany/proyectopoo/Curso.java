@@ -170,6 +170,24 @@ public class Curso {
         return false;
     }
     
+    public boolean replaceAlumno(String rutOriginal, String rutNuevo)
+    {
+        
+        if(this.listaRutAlumnos.contains(rutOriginal))
+        {
+            int  i = this.listaRutAlumnos.indexOf(rutOriginal);
+            this.listaRutAlumnos.remove(rutOriginal);
+            this.listaRutAlumnos.add(i,rutNuevo);
+            this.mapaNotasAlumnos.put(rutNuevo,this.mapaNotasAlumnos.remove(rutOriginal));
+            for(i = 0 ; i < this.listaAsignaturas.size();i++)
+            {
+                this.listaAsignaturas.get(i).replaceAlumno(rutOriginal,rutNuevo);
+            }
+            return true;
+        }
+        return false;
+    }
+    
     //Getters y Setters
     public String getNombreCurso() {
         return nombreCurso;

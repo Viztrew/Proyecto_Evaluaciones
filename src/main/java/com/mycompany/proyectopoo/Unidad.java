@@ -75,6 +75,17 @@ public class Unidad {
         }
         return false;
     }
+    public boolean replaceAlumno(String rutOriginal, String rutNuevo)
+    {
+        if (this.listaRutAlumnos.contains(rutOriginal))
+        {
+            int  i = this.listaRutAlumnos.indexOf(rutOriginal);
+            this.listaRutAlumnos.remove(rutOriginal);
+            this.listaRutAlumnos.add(i,rutNuevo);
+            return true;
+        }
+        return false;
+    }
     
     //Getters y Setters
     public String getNombreUnidad() {

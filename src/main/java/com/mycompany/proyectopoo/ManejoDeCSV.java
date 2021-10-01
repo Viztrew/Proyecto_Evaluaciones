@@ -355,4 +355,29 @@ public class ManejoDeCSV {
             e.printStackTrace();
         } 
     }
+    public static void replaceAlumnoCSV(String rutOriginal, String rutNuevo)
+    {
+       try {
+            BufferedReader archivo = new BufferedReader(new FileReader("Alumnos.csv"));
+            StringBuffer bufferLineas = new StringBuffer();
+            String linea;
+
+            while ((linea = archivo.readLine()) != null) {
+                String [] partes = linea.split(";");
+                if(partes[0].toLowerCase().equals(rutOriginal.toLowerCase()))
+                {
+                    linea = rutNuevo+";"+partes[1];
+                }
+                bufferLineas.append(linea);
+                bufferLineas.append('\n');
+            }
+            archivo.close();
+            FileOutputStream archivoOut = new FileOutputStream("Alumnos.csv");
+            archivoOut.write(bufferLineas.toString().getBytes());
+            archivoOut.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } 
+    }
 }

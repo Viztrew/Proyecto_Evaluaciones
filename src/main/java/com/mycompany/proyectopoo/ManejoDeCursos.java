@@ -347,8 +347,7 @@ public class ManejoDeCursos {
                     return true;
             }
         }
-        System.out.println("'"+rutAlumno+"' no fue encontrado en el sistema ");
-        System.out.print("\n");
+        
         return false;
     }
     public boolean validarAlumnoEnCurso(String nombreCurso, String rutAlumno)
@@ -526,6 +525,21 @@ public class ManejoDeCursos {
             {
                 if(this.cursos.get(i).deleteAlumno(rutAlumno)){
                     deleteAlumnoCSV(rutAlumno);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public boolean replaceAlumno(String rutOriginal, String rutNuevo)
+    {
+        String cursoAlumno = buscarAlumno(rutOriginal);
+        for (int i = 0 ; i < this.cursos.size(); i++)
+        {
+            if (this.cursos.get(i).getNombreCurso().equals(cursoAlumno))
+            {
+                if(this.cursos.get(i).replaceAlumno(rutOriginal,rutNuevo)){
+                    replaceAlumnoCSV(rutOriginal,rutNuevo);
                     return true;
                 }
             }

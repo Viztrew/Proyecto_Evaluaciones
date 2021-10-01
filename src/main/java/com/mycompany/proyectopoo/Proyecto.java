@@ -38,10 +38,11 @@ public class Proyecto {
         do{
             
             // Menu
-            System.out.println("---MENU PRINCIPAL---");
+            System.out.println("---MENÚ PRINCIPAL---");
             System.out.println("[1] Impresión de datos");
             System.out.println("[2] Agregar/Llenar datos");
             System.out.println("[3] Eliminar datos");
+            System.out.println("[4] Modificar datos");
             System.out.println("[0] Salir");
             System.out.println("Ingrese opción: ");
             opcion = lector.nextInt(); // Ingresan opcion            
@@ -111,7 +112,7 @@ public class Proyecto {
                                 c.mostrarAsigYUnidadesCurso(nombreCurso);
                                 break;
                             case 6:
-                                System.out.println("Opción: IMPRESION DE ASIGNATURAS Y UNIDADES DE UN CURSO ESPECÍFICO");
+                                System.out.println("Opción: IMPRESION DE NOTAS DE UN CURSO ESPECÍFICO");
                                 do
                                 {
                                     System.out.println("Cursos en el sistema:");
@@ -432,6 +433,11 @@ public class Proyecto {
                                     System.out.println("Ingrese RUT del alumno sin puntos y con guión (Ej:20132111-k)():");
                                     rutAlumno = lector.nextLine();  
                                     System.out.print("\n");
+                                    if (c.validarAlumno(rutAlumno)!=true) 
+                                    {
+                                        System.out.println("'"+rutAlumno+"' no fue encontrado en el sistema ");
+                                        System.out.print("\n");
+                                    }
                                 }while( c.validarAlumno(rutAlumno)!=true);
                                 System.out.println("Alumno "+ rutAlumno+ " fue encontrado en el Curso " + c.buscarAlumno(rutAlumno));
                                 do
@@ -446,6 +452,66 @@ public class Proyecto {
                                         System.out.println("Alumno " + rutAlumno + " ha sido eliminado.");
                                     }else{
                                         System.out.println("Alumno " + rutAlumno + " no se ha podido eliminar.");
+                                    }
+                                }
+                                break;
+                        }
+                                
+                    }while(atras);
+                    break;
+                    
+                case 4: //modificar
+                    atras=true;
+                    do
+                    {
+                        System.out.print("\n");
+                        System.out.println("Opcion: MODIFICAR DATOS");
+                        System.out.println("[1] Modificar RUT Alumno de Curso");
+                        System.out.println("[0] Atrás"); 
+                        System.out.println("Ingrese opción: ");
+                        opcion2 = lector.nextInt();         
+                        lector.nextLine();
+                        System.out.print("\n");
+                        switch (opcion2){
+                            case 0:
+                                atras=false;
+                                break;
+                            case 1:
+                                do
+                                {
+                                    System.out.println("Opcion: MODIFICAR RUT DE ALUMNO DE CURSO");
+                                    System.out.println("Alumnos en el sistema: ");
+                                    c.mostrarTodosAlumnos();
+                                    System.out.print("\n");
+                                    System.out.println("Ingrese RUT del alumno sin puntos y con guión (Ej:20132111-k)():");
+                                    rutAlumno = lector.nextLine();  
+                                    System.out.print("\n");
+                                }while( c.validarAlumno(rutAlumno)!=true);
+                                System.out.println("Alumno "+ rutAlumno+ " fue encontrado en el Curso " + c.buscarAlumno(rutAlumno));
+                                do
+                                {
+                                    do{
+                                        System.out.println("Ingrese nuevo rut para modificar el anterior ("+ rutAlumno+"):");
+                                        datoAGuardar=lector.nextLine();
+                                        if (c.validarAlumno(datoAGuardar)) System.out.println("El rut '"+ datoAGuardar + "' ya existe en el sistema.");
+                                        System.out.print("\n");
+                                    }while( c.validarAlumno(datoAGuardar)!=false);
+                                    System.out.println("'"+datoAGuardar+"' no fue encontrado en el sistema ");
+                                    System.out.print("\n");
+                                    do
+                                    {
+                                        System.out.println("¿Desea modificar el rut " + "'"+rutAlumno+"' por el rut '"+datoAGuardar+"'?" +"(esta acción será permanente)");
+                                        System.out.println("Ingrese opción: (Si/No)");
+                                        respuesta=lector.nextLine().toLowerCase();
+                                    }while((respuesta.equals("no") != true) && (respuesta.equals("si") != true)); 
+                                }while (respuesta.equals("no"));
+                                
+                                if (respuesta.equals("si")){
+                                    if(c.replaceAlumno(rutAlumno,datoAGuardar))
+                                    {
+                                        System.out.println("El rut '" + rutAlumno + "' ha sido modificado por '" + datoAGuardar+"'.");
+                                    }else{
+                                        System.out.println("Alumno '" + rutAlumno + "' no se ha podido modificar.");
                                     }
                                 }
                                 break;
