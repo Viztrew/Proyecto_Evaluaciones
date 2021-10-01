@@ -432,8 +432,7 @@ public class Proyecto {
                                     System.out.println("Ingrese RUT del alumno sin puntos y con guión (Ej:20132111-k)():");
                                     rutAlumno = lector.nextLine();  
                                     System.out.print("\n");
-                                }while( c.validarAlumno(rutAlumno)!=true || rutAlumno.equals("-1"));
-                                if (rutAlumno.equals("-1")) break;
+                                }while( c.validarAlumno(rutAlumno)!=true);
                                 System.out.println("Alumno "+ rutAlumno+ " fue encontrado en el Curso " + c.buscarAlumno(rutAlumno));
                                 do
                                 {
