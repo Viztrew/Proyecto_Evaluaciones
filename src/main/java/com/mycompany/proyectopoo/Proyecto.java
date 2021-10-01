@@ -25,6 +25,7 @@ public class Proyecto {
         String nombreCurso = null;
         String nombreAsig = null;
         String nombreUnidad = null;
+        String rutAlumno = null;
         String datoAGuardar = null;
         String respuesta = null;
         boolean atras;
@@ -412,15 +413,45 @@ public class Proyecto {
                         System.out.print("\n");
                         System.out.println("Opcion: ELIMINAR DATOS");
                         System.out.println("[1] Eliminar Alumno de Curso");
-                        System.out.println("[2] Agregar Asignatura a Curso");
-                        System.out.println("[3] Agregar Unidad a Asigantura");
-                        System.out.println("[4] Agregar Alumno a Curso");
-                        System.out.println("[5] Ingresar banco de preguntas");
-                        System.out.println("[0] Atras"); 
+                        System.out.println("[0] Atrás"); 
                         System.out.println("Ingrese opción: ");
                         opcion2 = lector.nextInt();         
                         lector.nextLine();
                         System.out.print("\n");
+                        switch (opcion2){
+                            case 0:
+                                atras=false;
+                                break;
+                            case 1:
+                                do
+                                {
+                                    System.out.println("Opcion: ELIMINAR ALUMNO DE CURSO");
+                                    System.out.println("Alumnos en el sistema: ");
+                                    c.mostrarTodosAlumnos();
+                                    System.out.print("\n");
+                                    System.out.println("Ingrese RUT del alumno sin puntos y con guión (Ej:20132111-k)():");
+                                    rutAlumno = lector.nextLine();  
+                                    System.out.print("\n");
+                                }while( c.validarAlumno(rutAlumno)!=true || rutAlumno.equals("-1"));
+                                if (rutAlumno.equals("-1")) break;
+                                System.out.println("Alumno "+ rutAlumno+ " fue encontrado en el Curso " + c.buscarAlumno(rutAlumno));
+                                do
+                                {
+                                    System.out.println("¿Desea ELIMINAR el rut " + "'"+rutAlumno+"'?" +"(esta acción será permanente)");
+                                    System.out.println("Ingrese opción: (Si/No)");
+                                    respuesta=lector.nextLine().toLowerCase();
+                                }while((respuesta.equals("no") != true) && (respuesta.equals("si") != true)); 
+                                if (respuesta.equals("si")){
+                                    if(c.deleteAlumno(rutAlumno))
+                                    {
+                                        System.out.println("Alumno " + rutAlumno + " ha sido eliminado.");
+                                    }else{
+                                        System.out.println("Alumno " + rutAlumno + " no se ha podido eliminar.");
+                                    }
+                                }
+                                break;
+                        }
+                                
                     }while(atras);
                     break;
                 default:

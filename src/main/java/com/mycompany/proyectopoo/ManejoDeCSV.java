@@ -268,7 +268,7 @@ public class ManejoDeCSV {
             }
             archivo.close();
 
-            // write the new string with the replaced line OVER the same file
+          
             FileOutputStream archivoOut = new FileOutputStream("Cursos.csv");
             archivoOut.write(bufferLineas.toString().getBytes());
             archivoOut.close();
@@ -315,8 +315,39 @@ public class ManejoDeCSV {
             }
             archivo.close();
 
-            // write the new string with the replaced line OVER the same file
+            
             FileOutputStream archivoOut = new FileOutputStream("Cursos.csv");
+            archivoOut.write(bufferLineas.toString().getBytes());
+            archivoOut.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } 
+    }
+    public static void deleteAlumnoCSV(String rutAlumno)
+    {
+       try {
+            BufferedReader archivo = new BufferedReader(new FileReader("Alumnos.csv"));
+            StringBuffer bufferLineas = new StringBuffer();
+            String linea;
+
+            while ((linea = archivo.readLine()) != null) {
+                String [] partes = linea.split(";");
+                if(partes[0].toLowerCase().equals(rutAlumno.toLowerCase()))
+                {
+                    
+                }else
+                {
+                    bufferLineas.append(linea);
+                    bufferLineas.append('\n');
+                }
+                
+
+            }
+            archivo.close();
+
+            // write the new string with the replaced line OVER the same file
+            FileOutputStream archivoOut = new FileOutputStream("Alumnos.csv");
             archivoOut.write(bufferLineas.toString().getBytes());
             archivoOut.close();
 

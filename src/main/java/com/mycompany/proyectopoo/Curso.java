@@ -153,11 +153,23 @@ public class Curso {
             {
                 notas=(this.mapaNotasAlumnos.get(this.listaRutAlumnos.get(j)));
             }
-            
         }
         return notas;
-        
     }
+    public boolean deleteAlumno(String rutAlumno)
+    {
+        if(this.listaRutAlumnos.remove(rutAlumno))
+        {
+            this.mapaNotasAlumnos.remove(rutAlumno);
+            for(int i = 0 ; i < this.listaAsignaturas.size();i++)
+            {
+                this.listaAsignaturas.get(i).deleteAlumno(rutAlumno);
+            }
+            return true;
+        }
+        return false;
+    }
+    
     //Getters y Setters
     public String getNombreCurso() {
         return nombreCurso;

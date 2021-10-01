@@ -67,7 +67,14 @@ public class Unidad {
             notas.add(this.listaNotas.get(i));
         return notas;
     }
-    
+    public boolean deleteAlumno(String rutAlumno)
+    {
+        if (this.listaRutAlumnos.remove(rutAlumno))
+        {
+            return true;
+        }
+        return false;
+    }
     
     //Getters y Setters
     public String getNombreUnidad() {

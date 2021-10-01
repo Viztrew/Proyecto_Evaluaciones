@@ -93,6 +93,18 @@ public class Asignatura {
         }
         return notas;
     }
+    public boolean deleteAlumno (String rutAlumno)
+    {
+        if (this.listaRutAlumnos.remove(rutAlumno))
+        {
+            for(int i = 0 ; i < this.listaUnidades.size(); i++)
+            {
+                this.listaUnidades.get(i).deleteAlumno(rutAlumno);
+            }
+            return true;
+        }
+        return false;
+    }
     
     //Getters y Setters
     public String getNombreAsignatura() {
