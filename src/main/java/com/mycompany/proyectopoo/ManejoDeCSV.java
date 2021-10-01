@@ -299,7 +299,7 @@ public class ManejoDeCSV {
                             {
                                 if (j==i)
                                 {
-                                    linea += unidades[j]+","+nombreUnidad;
+                                    linea += unidades[j]+","+nombreUnidad+" ";
                                 }else
                                 {
                                     linea +=unidades[j]+" ";

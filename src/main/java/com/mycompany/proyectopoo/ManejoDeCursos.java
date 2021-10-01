@@ -227,7 +227,6 @@ public class ManejoDeCursos {
                             for(int k = 0; k < listaNombresUnidades.size(); k++ )
                                 System.out.println("Unidad "+(k+1)+": " +listaNombresUnidades.get(k) );
                         }
-                        return;
                     }
                 }
             }
@@ -282,7 +281,7 @@ public class ManejoDeCursos {
                 }
             }
         }
-        System.out.println("'"+nombreUnidad+"' no fue encontrado en la Asignatura " +nombreAsig+ ", intente nuevamente." );
+        System.out.println("'"+nombreUnidad+"' no fue encontrado en la Asignatura " +nombreAsig );
         System.out.print("\n");
         return false;
     }
@@ -346,8 +345,15 @@ public class ManejoDeCursos {
             {
                 ArrayList <String> listaPreguntas = new ArrayList <String>();
                 listaPreguntas.addAll(cursos.get(i).getListaPreguntasAsig(nombreAsig, nombreUnidad));
-                for (int j = 0 ; j<listaPreguntas.size();j++)
+                if (listaPreguntas.isEmpty())
+                {
+                    System.out.println("No se encontraron preguntas");
+                    return;
+                }else{
+                    for (int j = 0 ; j<listaPreguntas.size();j++)
                     System.out.println("Pregunta "+(j+1)+": "+listaPreguntas.get(j));
+                }
+                
             }
         }
     }
@@ -409,8 +415,76 @@ public class ManejoDeCursos {
         }
     }
 
-    
-
-
-    
+    public ArrayList<String> getNombreCursos()
+    {
+        ArrayList<String> nombreCursos = new ArrayList<>();
+        for (int i = 0 ; i < this.listaCursos.size(); i++)
+            nombreCursos.add(this.listaCursos.get(i));
+        return nombreCursos;
+    }
+    public ArrayList<String> getRutAlumnos(String curso)
+    {
+        ArrayList<String> rutAlumnos = new ArrayList<>();
+        for(int i = 0 ; i < this.cursos.size(); i++)
+        {
+            if (curso.equals(this.cursos.get(i).getNombreCurso()))
+            {
+                rutAlumnos=this.cursos.get(i).getListaRuts();
+                break;
+            }
+        }
+        return rutAlumnos;
+    }
+    public ArrayList<String> getNombresAsignaturas(String curso)
+    {
+        ArrayList<String> listaAsignaturas = new ArrayList<>();
+        for(int i = 0 ; i < this.cursos.size(); i++)
+        {
+            if (curso.equals(this.cursos.get(i).getNombreCurso()))
+            {
+                listaAsignaturas = this.cursos.get(i).getListaNombresAsig();
+                break;
+            }
+        }
+        return listaAsignaturas;
+    }
+    public ArrayList<String> getUnidadesAsignatura(String curso,String asig)
+    {
+        ArrayList<String> listaUnidades = new ArrayList<>();
+        for(int i = 0 ; i < this.cursos.size(); i++)
+        {
+            if (curso.equals(this.cursos.get(i).getNombreCurso()))
+            {
+                listaUnidades = this.cursos.get(i).getListaNombresUnidades(asig);
+                break;
+            }
+        }
+        return listaUnidades;
+    }
+    public ArrayList<Double> getNotasAlumno (String curso, String rut)
+    {
+        ArrayList<Double> notasAlumno = new ArrayList<>();
+        for(int i = 0 ; i < this.cursos.size(); i++)
+        {
+            if (curso.equals(this.cursos.get(i).getNombreCurso()))
+            {
+                notasAlumno = this.cursos.get(i).getNotas(rut);
+                break;
+            }
+        }
+        
+        return notasAlumno;
+    }
+    public ArrayList<String> getBancoPreguntas (String curso, String Asig, String Unidad)
+    {
+        ArrayList<String> preguntas = new ArrayList<>();
+        for(int i = 0 ; i < this.cursos.size(); i++)
+        {
+            if (curso.equals(this.cursos.get(i).getNombreCurso()))
+            {
+                preguntas = this.cursos.get(i).getListaPreguntasAsig(Asig, Unidad);
+            }
+        }
+        return preguntas;
+    }
 }
