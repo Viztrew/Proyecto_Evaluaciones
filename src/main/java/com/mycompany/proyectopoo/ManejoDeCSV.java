@@ -106,7 +106,7 @@ public class ManejoDeCSV {
         return listaParametro;
     }
         
-    public static ArrayList<String> leerParametroCursoCSV(String nombreCurso, String parametro, String nombreArchivo) {
+    public static ArrayList<String> leerParametroCursoCSV(String nombreCurso, String parametro, String nombreArchivo, boolean repetirValor) {
         
         ArrayList<String> listaParametro = new ArrayList<>();
         FileReader fr = null;
@@ -126,17 +126,26 @@ public class ManejoDeCSV {
             {  
                 String[] partes = linea.split(";");
                /*se llenará el ArrayList listaParametro con un parametro ssi la linea leída posee el nombre del curso buscado 
-                  en la parte correspondiente (partes[columnaCurso]) y el ArrayList no posea un parametro con el mismo valor
+                  en la parte correspondiente (partes[columnaCurso]) y si el bool acepta valores repetidos, sino el ArrayList se llenará con valores sin repetir
                 */
                 
                 if(partes[columnaCurso].toLowerCase().equals(nombreCurso.toLowerCase())){ 
-                    if (listaParametro.isEmpty())
+                    if (repetirValor)
+                    {
                         listaParametro.add(partes[columnaParametro]);
-                    else{
-                        if (listaParametro.contains(partes[columnaParametro]) == false){
+                    }else
+                    {
+                        if (listaParametro.isEmpty())
+                        {
                             listaParametro.add(partes[columnaParametro]);
+
+                        }else{
+                            if (listaParametro.contains(partes[columnaParametro]) == false){
+                                listaParametro.add(partes[columnaParametro]);
+                            }
                         }
                     }
+                    
                 }
                 
                 
@@ -156,7 +165,7 @@ public class ManejoDeCSV {
     }
     
         // funcion que recibe como parametro la primera linea del csv y la columna que se busca en el archivo, retorna el numero de la columna
-        // Ej: buscarColumnaCSV(primeraLinea,"Curso") retorna 2
+        // Ej: buscarColumnaCSV(primeraLinea,"Curso") retorna 1
     public static int buscarColumnaCSV(String linea,String columnaBuscada) {
         int columna = 0;
         
@@ -250,16 +259,21 @@ public class ManejoDeCSV {
             BufferedReader archivo = new BufferedReader(new FileReader("Cursos.csv"));
             StringBuffer bufferLineas = new StringBuffer();
             String linea;
-
+            
+            linea = archivo.readLine();
+            int columnaCurso = buscarColumnaCSV(linea,"Curso"); 
+            int columnaAsig= buscarColumnaCSV(linea,"Asignaturas"); 
+            int columnaUnidad= buscarColumnaCSV(linea,"Unidades"); 
+            
             while ((linea = archivo.readLine()) != null) {
                 String [] partes = linea.split(";");
-                if(partes[0].toLowerCase().equals(nombreCurso.toLowerCase()))
+                if(partes[columnaCurso].toLowerCase().equals(nombreCurso.toLowerCase()))
                 {
-                    if (partes[1].toLowerCase().equals("none"))
+                    if (partes[columnaAsig].toLowerCase().equals("none"))
                     {
-                        linea = partes[0]+";"+nombreAsig+";"+nombreUnidad;
+                        linea = partes[columnaCurso]+";"+nombreAsig+";"+nombreUnidad;
                     }else{
-                        linea = partes[0]+";"+partes[1]+","+nombreAsig+";"+partes[2]+" "+nombreUnidad;
+                        linea = partes[columnaCurso]+";"+partes[columnaAsig]+","+nombreAsig+";"+partes[columnaUnidad]+" "+nombreUnidad;
                     }        
                 }
                 bufferLineas.append(linea);
@@ -346,7 +360,7 @@ public class ManejoDeCSV {
             }
             archivo.close();
 
-            // write the new string with the replaced line OVER the same file
+            
             FileOutputStream archivoOut = new FileOutputStream("Alumnos.csv");
             archivoOut.write(bufferLineas.toString().getBytes());
             archivoOut.close();
@@ -357,6 +371,8 @@ public class ManejoDeCSV {
     }
     public static void replaceAlumnoCSV(String rutOriginal, String rutNuevo)
     {
+        
+       
        try {
             BufferedReader archivo = new BufferedReader(new FileReader("Alumnos.csv"));
             StringBuffer bufferLineas = new StringBuffer();
@@ -379,5 +395,57 @@ public class ManejoDeCSV {
         } catch (Exception e) {
             e.printStackTrace();
         } 
+    }
+    
+    //función que genera un csv con las notas guardadas en ram
+    public static void generarNotasCSV (ManejoDeCursos c)
+    {
+        FileWriter fichero = null;
+        PrintWriter pw = null;
+        try
+        {
+            fichero = new FileWriter("Notas.csv",false);
+            pw = new PrintWriter(fichero);
+            pw.println("Rut;Nota;Curso");
+            ArrayList<String> cursos = c.getNombreCursos();
+            for(int i = 0 ; i < cursos.size() ; i++)
+            {
+                ArrayList<String> alumnos = c.getRutAlumnos(cursos.get(i));
+                for (int j = 0 ; j < alumnos.size() ; j++)
+                {
+                    pw.print(alumnos.get(j)+";");
+                    ArrayList<Double> notas = c.getNotasAlumno(cursos.get(i),alumnos.get(j));
+                    for (int k = 0 ; k < notas.size() ; k++)
+                    {
+                        if(k==0){
+                            pw.print(notas.get(k));
+                        }else
+                        {
+                            pw.print(","+notas.get(k));
+                        }
+                        
+                    }
+                    pw.print(";");
+                    pw.print(cursos.get(i));
+                    pw.println();
+                }
+            }
+
+            
+            
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+           try {
+           // Nuevamente aprovechamos el finally para 
+           // asegurarnos que se cierra el fichero.
+           if (null != fichero)
+              fichero.close();
+           } catch (Exception e2) {
+              e2.printStackTrace();
+           }
+        }
+        
     }
 }

@@ -64,6 +64,14 @@ public class Asignatura {
         Unidad uni = new Unidad (nombreUnidad,this.listaRutAlumnos);
         this.listaUnidades.add(uni);
     }
+    public void addNotaAlumnoUnidad(String nombreUnidad, double notaAGuardar,String rutAlumno, boolean inicializacion)
+    {
+         for(int i = 0; i < this.listaUnidades.size(); i++ )
+        {
+            if((this.listaUnidades.get(i).getNombreUnidad()).toLowerCase().equals(nombreUnidad.toLowerCase()))
+                this.listaUnidades.get(i).setNota(notaAGuardar, rutAlumno, inicializacion);
+        }
+    }
     
     public ArrayList <String> getNombreUnidades()
     {
@@ -79,7 +87,7 @@ public class Asignatura {
         for(int k = 0; k < this.listaUnidades.size(); k++ )
         {
             if((this.listaUnidades.get(k).getNombreUnidad()).toLowerCase().equals(nombreUnidad.toLowerCase()))
-            listaPreguntas = this.listaUnidades.get(k).getPreguntas();
+                listaPreguntas = this.listaUnidades.get(k).getPreguntas();
         }
         return listaPreguntas;
     }
@@ -89,9 +97,19 @@ public class Asignatura {
         for(int k = 0; k < this.listaUnidades.size(); k++ )
         {
             if((this.listaUnidades.get(k).getNombreUnidad()).toLowerCase().equals(nombreUnidad.toLowerCase()))
-            notas = this.listaUnidades.get(k).getNotas();
+                notas = this.listaUnidades.get(k).getNotas();
         }
         return notas;
+    }
+    public double getNotaAlumno(String nombreUnidad, String rutAlumno)
+    {
+        double nota = 0.0;
+        for(int k = 0; k < this.listaUnidades.size(); k++ )
+        {
+            if((this.listaUnidades.get(k).getNombreUnidad()).toLowerCase().equals(nombreUnidad.toLowerCase()))
+            nota = this.listaUnidades.get(k).getNotaAlumno(rutAlumno);
+        }
+        return nota;
     }
     public boolean deleteAlumno (String rutAlumno)
     {

@@ -4,6 +4,7 @@ package com.mycompany.proyectopoo;
 import java.util.ArrayList;
 import java.io.IOException;
 import static com.mycompany.proyectopoo.ManejoDeCSV.*;
+import org.apache.commons.math3.util.Precision;//se utiliza la dependencia org.apache.commons de matematicas para aproximar los numeros decimales con Precision.round
 public class ManejoDeCursos {
          //Se crea un arrayList para guardar los cursos que se leeran del csv en la funcion leerParametroCSV
     private ArrayList<String> listaCursos;
@@ -25,13 +26,13 @@ public class ManejoDeCursos {
                     curso = new Curso(nombreCurso);
                     break;
                 case 2: //Solamente el nombre del curso y al menos un alumno estan guardados en los csv
-                    curso = new Curso(nombreCurso,leerParametroCursoCSV(nombreCurso,"Rut","Alumnos.csv"));
+                    curso = new Curso(nombreCurso,leerParametroCursoCSV(nombreCurso,"Rut","Alumnos.csv",false));
                     break;
                 case 3: //Solamente el nombre del curso, al menos una asignatura y una unidad de dicha asignatura estan guardados en los csv
-                    curso = new Curso(nombreCurso,leerParametroCursoCSV(nombreCurso, "Asignaturas","Cursos.csv").get(0).split(","),leerParametroCursoCSV(nombreCurso,"Unidades","Cursos.csv").get(0).split(" "));   
+                    curso = new Curso(nombreCurso,leerParametroCursoCSV(nombreCurso, "Asignaturas","Cursos.csv",false).get(0).split(","),leerParametroCursoCSV(nombreCurso,"Unidades","Cursos.csv",false).get(0).split(" "));   
                     break;
                 case 4: //El curso tiene guardado al menos un alumno, asignatura y una unidad de dicha asignatura
-                    curso = new Curso(nombreCurso,leerAlumnosCursoCSV(nombreCurso,"Alumnos.csv"), leerParametroCursoCSV(nombreCurso, "Asignaturas","Cursos.csv").get(0).split(","), leerParametroCursoCSV(nombreCurso,"Unidades","Cursos.csv").get(0).split(" "));
+                    curso = new Curso(nombreCurso,leerAlumnosCursoCSV(nombreCurso,"Alumnos.csv"), leerParametroCursoCSV(nombreCurso, "Asignaturas","Cursos.csv",false).get(0).split(","), leerParametroCursoCSV(nombreCurso,"Unidades","Cursos.csv",false).get(0).split(" "));
                     break;
             }
             this.cursos.add(curso);
@@ -39,8 +40,11 @@ public class ManejoDeCursos {
         
         //se leen los bancos de preguntas (si tienen) de las unidades de cada asignatura de cada curso 
         for (int i = 0; i < this.cursos.size(); i++ )
-            leerBancoDePreguntas(cursos.get(i));
-        crearMapAlumnos(cursos);
+            leerBancoDePreguntasCSV(cursos.get(i));
+        
+        for (int i = 0; i < this.cursos.size(); i++ )
+            leerNotasCSV(cursos.get(i));
+        
     }
     
         //funcion que retorna un int que determina que constructor se utiliza para el objeto curso, según los datos presentes en los csv
@@ -48,13 +52,13 @@ public class ManejoDeCursos {
     {
         int caso;
         if (leerAlumnosCursoCSV(nombreCurso,"Alumnos.csv").isEmpty()){
-            if (leerParametroCursoCSV(nombreCurso, "Asignaturas","Cursos.csv").get(0).equals("none")){
+            if (leerParametroCursoCSV(nombreCurso, "Asignaturas","Cursos.csv",false).get(0).equals("none")){
                 caso=1;
             }else{
                 caso=3;
             }
         }else{
-            if (leerParametroCursoCSV(nombreCurso, "Asignaturas","Cursos.csv").get(0).equals("none")){
+            if (leerParametroCursoCSV(nombreCurso, "Asignaturas","Cursos.csv",false).get(0).equals("none")){
                 caso=2;
             }else{
                 caso=4;
@@ -62,26 +66,9 @@ public class ManejoDeCursos {
         }
         return caso;
     }
-    public void crearMapAlumnos(ArrayList<Curso> cursos) {
-        for (int i = 0; i < cursos.size(); i++ ){
-            for (int z = 0 ; z < cursos.get(i).getListaRuts().size() ; z++)
-            {
-                ArrayList<Double> notasAlumno= new ArrayList<>();
-                for(int j = 0; j < cursos.get(i).getListaNombresAsig().size(); j++ )
-                {
-                    for(int k = 0; k < cursos.get(i).getListaNombresUnidades(cursos.get(i).getListaNombresAsig().get(j)).size(); k++ )
-                    {
-                        ArrayList<Double> listaNotas = cursos.get(i).getListaNotasAsig(cursos.get(i).getListaNombresAsig().get(j), cursos.get(i).getListaNombresUnidades(cursos.get(i).getListaNombresAsig().get(j)).get(k));
-                        notasAlumno.add(listaNotas.get(z));
-                    }
-                }
-                cursos.get(i).guardarNotasCurso(cursos.get(i).getListaRuts().get(z), notasAlumno);
-            }
-        } 
-    }
     
-    private void leerBancoDePreguntas(Curso curso) {
-        ArrayList<String> listaPreguntas = leerParametroCursoCSV(curso.getNombreCurso(),"Asignatura,Unidad,Pregunta","BancoPreguntas.csv");
+    private void leerBancoDePreguntasCSV(Curso curso) {
+        ArrayList<String> listaPreguntas = leerParametroCursoCSV(curso.getNombreCurso(),"Asignatura,Unidad,Pregunta","BancoPreguntas.csv",false);
         ArrayList<String> listaAsig = curso.getListaNombresAsig();
         
         for(int i = 0 ; i<listaPreguntas.size(); i++)
@@ -97,6 +84,31 @@ public class ManejoDeCursos {
                         if (partes[1].toLowerCase().equals(listaUnidades.get(k).toLowerCase()))
                             addPreguntaUnidad(curso.getNombreCurso(), partes[0], partes[1], partes[2], false);
                     }
+                }
+            }
+        }
+    }
+    
+    private void leerNotasCSV (Curso curso)
+    {
+        ArrayList<String> listaRuts = leerParametroCursoCSV(curso.getNombreCurso(),"Rut","Notas.csv",false);
+        ArrayList<String> listaNotas = leerParametroCursoCSV(curso.getNombreCurso(),"Nota","Notas.csv",true);
+     
+        ArrayList<String> listaAsig = curso.getListaNombresAsig();
+        
+        for(int i = 0 ; i<listaRuts.size(); i++)
+        {
+            
+            String[] notas = listaNotas.get(i).split(",");
+            int aux = 0;
+            for (int j = 0; j< listaAsig.size() ; j++)
+            {
+                
+                ArrayList <String> listaUnidades = curso.getListaNombresUnidades(listaAsig.get(j));
+                for (int k = 0 ; k < listaUnidades.size() ; k++)
+                {
+                    addNotaAlumno(curso.getNombreCurso(),listaAsig.get(j),listaUnidades.get(k),listaRuts.get(i),Double.parseDouble(notas[aux]),true);
+                    aux++;
                 }
             }
         }
@@ -282,6 +294,30 @@ public class ManejoDeCursos {
             }
         }
     }
+    public void mostrarAlumnosYNotasUnidad(String nombreCurso, String nombreAsig, String nombreUnidad)
+    {
+        for (int i = 0 ; i< this.cursos.size() ; i++)
+        {
+            if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
+            {
+                ArrayList<String> listaAlumnos = this.cursos.get(i).getListaRuts();
+                for (int j = 0 ; j < listaAlumnos.size(); j++)
+                {
+                    System.out.print("Alumno "+j+": "+ listaAlumnos.get(j)+" Nota de Unidad "+ nombreUnidad+": ");
+                    if (getNotaAlumno(nombreCurso, nombreAsig, nombreUnidad, listaAlumnos.get(j))==0.0)
+                    {
+                        System.out.println("s/n");
+                    }
+                    else
+                    {
+                        System.out.println(getNotaAlumno(nombreCurso, nombreAsig, nombreUnidad, listaAlumnos.get(j)));
+                    }
+                    
+                }
+                
+            }
+        }
+    }
 
     
     public boolean validarCurso(String nombreCurso)
@@ -382,6 +418,22 @@ public class ManejoDeCursos {
         }
         return false;
     }
+     public boolean verificarAlumnosDeCurso(String nombreCurso)
+    {
+        for (int i = 0; i < this.cursos.size(); i++ ){
+            if ((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
+            {
+                ArrayList <String> listaAlumnos = cursos.get(i).getListaRuts();
+                if (listaAlumnos.isEmpty()){
+                    return false;
+                }else
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     public String buscarAlumno(String rutAlumno)
     {
         String curso = null;
@@ -420,6 +472,12 @@ public class ManejoDeCursos {
             if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
             {
                 cursos.get(i).addAsignatura(nombreAsig,nombreUnidad);
+                
+                ArrayList<String> alumnos = this.cursos.get(i).getListaRuts();
+                for (int j = 0 ; j < alumnos.size(); j++)
+                {
+                    addNotaAlumno(nombreCurso, nombreAsig, nombreUnidad, alumnos.get(j), 0.0, true);
+                }
             }
         }
         guardarAsignaturaEnCSV(nombreCurso,nombreAsig,nombreUnidad);
@@ -429,6 +487,11 @@ public class ManejoDeCursos {
             if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
             {
                 cursos.get(i).addUnidadAsignatura(nombreAsig,nombreUnidad);
+                ArrayList<String> alumnos = this.cursos.get(i).getListaRuts();
+                for (int j = 0 ; j < alumnos.size(); j++)
+                {
+                    addNotaAlumno(nombreCurso, nombreAsig, nombreUnidad, alumnos.get(j), 0.0, true);
+                }
             }
         }
         guardarUnidadEnCSV(nombreCurso,nombreAsig,nombreUnidad);
@@ -442,7 +505,14 @@ public class ManejoDeCursos {
         if (guardarEnCSV) 
             guardarPreguntaEnCSV(nombreCurso, nombreAsig, nombreUnidad, pregunta);
     }
-    
+    public void addNotaAlumno(String nombreCurso,String nombreAsig, String nombreUnidad,String rutAlumno,double notaAGuardar,boolean inicializacion)
+    {
+        for (int i = 0; i < this.cursos.size() ; i++ ){
+            if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase())){
+                cursos.get(i).addNotaAlumno(nombreAsig, nombreUnidad, rutAlumno,notaAGuardar,inicializacion);
+            }
+        }
+    }
 
     public ArrayList<String> getNombreCursos()
     {
@@ -490,19 +560,31 @@ public class ManejoDeCursos {
         }
         return listaUnidades;
     }
-    public ArrayList<Double> getNotasAlumno (String curso, String rut)
+    public ArrayList<Double> getNotasAlumno (String nombreCurso, String rutAlumno)
     {
         ArrayList<Double> notasAlumno = new ArrayList<>();
         for(int i = 0 ; i < this.cursos.size(); i++)
         {
-            if (curso.equals(this.cursos.get(i).getNombreCurso()))
+            if (nombreCurso.equals(this.cursos.get(i).getNombreCurso()))
             {
-                notasAlumno = this.cursos.get(i).getNotas(rut);
+                notasAlumno = this.cursos.get(i).getNotas(rutAlumno);
                 break;
             }
         }
-        
         return notasAlumno;
+    }
+    public double getNotaAlumno (String nombreCurso, String nombreAsig, String nombreUnidad, String rutAlumno)
+    {
+        double nota=0.0;
+        for(int i = 0 ; i < this.cursos.size(); i++)
+        {
+            if (nombreCurso.toLowerCase().equals(this.cursos.get(i).getNombreCurso().toLowerCase()))
+            {
+                nota = this.cursos.get(i).getNotaAlumno(nombreAsig,nombreUnidad,rutAlumno);
+                break;
+            }
+        }
+        return nota;
     }
     public ArrayList<String> getBancoPreguntas (String curso, String Asig, String Unidad)
     {
@@ -515,6 +597,63 @@ public class ManejoDeCursos {
             }
         }
         return preguntas;
+    }
+    // para los promedios se utiliza la dependencia org.apache.commons de matematicas para aproximar los numeros decimales
+    // metodo que promedia notas de una unidad, las notas 0.0 (sin nota) no son consideradas
+    public double getPromedioNotasUnidad(String nombreCurso, String nombreAsig, String nombreUnidad)
+    {
+        double totalNotas = 0.0 , nota, promedioNotas=0.0;
+        int alumnosConNota=0;
+        for(int i = 0 ; i < this.cursos.size(); i++)
+        {
+            if (nombreCurso.toLowerCase().equals(this.cursos.get(i).getNombreCurso().toLowerCase()))
+            {
+                ArrayList<String> alumnos = this.cursos.get(i).getListaRuts();
+                for (int j =0 ; j < alumnos.size() ; j++)
+                {
+                    nota = getNotaAlumno(nombreCurso, nombreAsig, nombreUnidad, alumnos.get(j));
+                    
+                    //si la nota es 0.0 (sin nota) no se considera en el promedio, es por eso que es necesaria 
+                    //la variable alumnosConNota, para saber con que número obtener el promedio
+                    if (getNotaAlumno(nombreCurso, nombreAsig, nombreUnidad, alumnos.get(j))!= 0.0)
+                    {
+                        totalNotas += nota;
+                        alumnosConNota++;
+                    }
+                }
+                // si la unidad no tiene notas en ella, el promedio tambien es 0.0
+                if (totalNotas==0.0)
+                {
+                    promedioNotas = 0.0;
+                }else{
+                    promedioNotas = totalNotas/alumnosConNota;
+                }
+            }
+        }
+        return Precision.round(promedioNotas,1);
+    }
+    public double getPromedioAlumno(String nombreCurso, String rutAlumno)
+    {
+        double notasAlumno=0.0;
+        int cantNotas=0;
+        for(int i = 0 ; i < this.cursos.size(); i++)
+        {
+            if (nombreCurso.toLowerCase().equals(this.cursos.get(i).getNombreCurso().toLowerCase())){
+                ArrayList <Double> listaNotas =  this.cursos.get(i).getNotas(rutAlumno);
+                for (int j = 0 ; j < listaNotas.size() ; j++)
+                {
+                    if (listaNotas.get(j) != 0.0){
+                        notasAlumno += listaNotas.get(j);
+                        cantNotas++;
+                    }
+                }
+            }
+            if (cantNotas>0)
+            {
+                return Precision.round(notasAlumno/cantNotas,1);
+            }
+        }
+        return 0.0;
     }
     public boolean deleteAlumno (String rutAlumno)
     {
@@ -546,5 +685,7 @@ public class ManejoDeCursos {
         }
         return false;
     }
+    
+    
     
 }

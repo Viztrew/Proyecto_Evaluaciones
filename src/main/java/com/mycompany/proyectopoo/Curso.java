@@ -6,12 +6,11 @@ public class Curso {
     private String nombreCurso;
     private ArrayList<Asignatura> listaAsignaturas;
     private ArrayList<String> listaRutAlumnos;
-    private HashMap<String,ArrayList<Double>> mapaNotasAlumnos;
+    
     
     //Constructor
     public Curso(String nombreCurso) {
         this.nombreCurso = nombreCurso;
-        this.mapaNotasAlumnos = new HashMap<>();
         
         this.listaRutAlumnos = new ArrayList<>();
         
@@ -20,7 +19,6 @@ public class Curso {
     
     public Curso(String nombreCurso,ArrayList<String>listaRutAlumnos) {
         this.nombreCurso = nombreCurso;
-        this.mapaNotasAlumnos = new HashMap<>();
         
         this.listaRutAlumnos = new ArrayList<>();
         this.listaRutAlumnos.addAll(listaRutAlumnos);
@@ -30,7 +28,6 @@ public class Curso {
     
     public Curso(String nombreCurso, String [] asignaturasCurso , String [] unidadesAsigUnidos) {
         this.nombreCurso = nombreCurso;
-        this.mapaNotasAlumnos = new HashMap<>();
         
         this.listaRutAlumnos = new ArrayList<>();
         
@@ -44,7 +41,6 @@ public class Curso {
     
     public Curso(String nombreCurso, ArrayList<String>listaRutAlumnos, String [] asignaturasCurso , String [] unidadesAsigUnidos) {
         this.nombreCurso = nombreCurso;
-        this.mapaNotasAlumnos = new HashMap<>();
         
         this.listaRutAlumnos = new ArrayList<>();
         this.listaRutAlumnos.addAll(listaRutAlumnos);
@@ -90,9 +86,13 @@ public class Curso {
                 this.listaAsignaturas.get(i).addPreguntaUnidad(nombreUnidad,pregunta);
         }
     }
-    public void guardarNotasCurso(String rut, ArrayList<Double> notas)
+    public void addNotaAlumno(String nombreAsig, String nombreUnidad, String rutAlumno, double notaAGuardar, boolean inicializacion)
     {
-        this.mapaNotasAlumnos.put(rut, notas);
+        for(int i = 0; i < this.listaAsignaturas.size(); i++ )
+        {
+            if((this.listaAsignaturas.get(i).getNombreAsignatura()).toLowerCase().equals(nombreAsig.toLowerCase()))
+                this.listaAsignaturas.get(i).addNotaAlumnoUnidad(nombreUnidad,notaAGuardar,rutAlumno,inicializacion);
+        }
     }
     
     public ArrayList<String> getListaRuts ()
@@ -124,9 +124,7 @@ public class Curso {
         for(int j = 0; j < this.listaAsignaturas.size(); j++ )
         {
             if((this.listaAsignaturas.get(j).getNombreAsignatura()).toLowerCase().equals(nombreAsig.toLowerCase()))
-            {
                 listaPreguntasUnidades = this.listaAsignaturas.get(j).getListaPreguntasUnidad(nombreUnidad);
-            }
         }
         return listaPreguntasUnidades;
     }
@@ -137,9 +135,7 @@ public class Curso {
         for(int j = 0; j < this.listaAsignaturas.size(); j++ )
         {
             if((this.listaAsignaturas.get(j).getNombreAsignatura()).toLowerCase().equals(nombreAsig.toLowerCase()))
-            {
                 notas = this.listaAsignaturas.get(j).getListaNotasUnidad(nombreUnidad);
-            }
         }
         return notas;
     }
@@ -147,20 +143,31 @@ public class Curso {
     public  ArrayList<Double> getNotas(String rutAlumno)
     {
         ArrayList<Double> notas = new  ArrayList<>(); 
-        for(int j = 0; j < this.listaRutAlumnos.size(); j++ )
+        for(int j = 0; j < this.listaAsignaturas.size(); j++ )
         {
-            if (this.listaRutAlumnos.get(j).toLowerCase().equals(rutAlumno.toLowerCase()))
+            ArrayList<String> unidades = this.listaAsignaturas.get(j).getNombreUnidades(); 
+            for (int z = 0; z < unidades.size(); z++)
             {
-                notas=(this.mapaNotasAlumnos.get(this.listaRutAlumnos.get(j)));
+                notas.add(this.listaAsignaturas.get(j).getNotaAlumno(unidades.get(z), rutAlumno));
             }
         }
         return notas;
+    }
+    public double getNotaAlumno (String nombreAsig, String nombreUnidad, String rutAlumno)
+    {
+        double nota = 0.0;
+        for(int j = 0; j < this.listaAsignaturas.size(); j++ )
+        {
+            if((this.listaAsignaturas.get(j).getNombreAsignatura()).toLowerCase().equals(nombreAsig.toLowerCase()))
+                nota = this.listaAsignaturas.get(j).getNotaAlumno(nombreUnidad,rutAlumno);
+        }
+        return nota;
     }
     public boolean deleteAlumno(String rutAlumno)
     {
         if(this.listaRutAlumnos.remove(rutAlumno))
         {
-            this.mapaNotasAlumnos.remove(rutAlumno);
+            //
             for(int i = 0 ; i < this.listaAsignaturas.size();i++)
             {
                 this.listaAsignaturas.get(i).deleteAlumno(rutAlumno);
@@ -178,7 +185,6 @@ public class Curso {
             int  i = this.listaRutAlumnos.indexOf(rutOriginal);
             this.listaRutAlumnos.remove(rutOriginal);
             this.listaRutAlumnos.add(i,rutNuevo);
-            this.mapaNotasAlumnos.put(rutNuevo,this.mapaNotasAlumnos.remove(rutOriginal));
             for(i = 0 ; i < this.listaAsignaturas.size();i++)
             {
                 this.listaAsignaturas.get(i).replaceAlumno(rutOriginal,rutNuevo);
