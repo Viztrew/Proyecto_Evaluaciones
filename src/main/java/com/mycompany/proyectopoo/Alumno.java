@@ -6,7 +6,6 @@ public class Alumno extends Persona{
   
   //Instancia de Clase
   private ArrayList<Double> listaNotasAlumno;
-  private ArrayList<Double> copiaLista;
   
  //Constructor
   public Alumno(String rutPersona, ArrayList<Double> listaNotasAlumno){
