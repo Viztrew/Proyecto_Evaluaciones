@@ -12,6 +12,7 @@ public interface EstadoMatricula {
     public String reprobado = "REPROBADO"; 
     public   String desconocido = "DESCONOCIDO";
     public abstract void reportarEstado();
+    public abstract void actualizarEstado();
     
     
 }

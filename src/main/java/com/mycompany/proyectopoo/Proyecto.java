@@ -925,7 +925,7 @@ public abstract class Proyecto implements EstadoMatricula{
                                                 if((notaAlumno >= 1.0 && notaAlumno <= 7.0))
                                                 {
                                                     c.addNotaEvaluacionFinal(rutAlumno,notaAlumno);
-                                                    System.out.println("Nota Ingresada. \n");
+                                                    actualizarEstado(c.getEstadoAlumno(rutAlumno));
                                                 }else
                                                 {
                                                     System.out.println("Formato inválido, intente nuevamente ingresando un número entre 1.0 y 7.0.");
@@ -963,6 +963,28 @@ public abstract class Proyecto implements EstadoMatricula{
             }
         }
         System.out.println(estado);
+    }
+    public static void actualizarEstado(int estado)
+    {
+        switch(estado)
+        {
+            case 0:
+                System.out.println(desconocido);
+                break;
+            case 1:
+                System.out.println(aprobado+" CON BECA");
+                break;
+            case 2:
+                System.out.println(aprobado+" SIN BECA");
+                break;
+            case 3:
+                System.out.println(reprobado);
+                break;
+            case 4:
+                System.out.println(reprobado);
+                break;
+        }
+        System.out.println("\n");
     }
     
     // se genera un reporte de los datos guardados, generando un reporte de cada curso con sus asignaturas, unidades, alumnos y sus notas

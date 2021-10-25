@@ -873,6 +873,54 @@ public class ManejoDeCursos {
         }
         return 0.0;
     }
+    
+    //metodo que retorna un int segun el estado actual del alumno
+    //1: alumno aprobado y con beca
+    //2: alumno aprobado y sin beca
+    //3: alumno reprobado y con examen
+    //4: alumno reprobado y sin examen
+    //0: desconocido
+    public int getEstadoAlumno(String rutAlumno)
+    {
+        String nombreCurso = buscarAlumno(rutAlumno);
+        for (int i = 0; i < this.cursos.size() ; i++ )
+        {
+            if ((cursos.get(i).getNombreCurso()).equals(nombreCurso))
+            {
+                ArrayList<AlumnoMatricula> estados = this.cursos.get(i).getEstadoCurso();
+                for (int j = 0 ; j < estados.size() ; j++)
+                {
+                    if (estados.get(j).getRutPersona().toLowerCase().equals(rutAlumno.toLowerCase()))
+                    {
+                        
+                        if (estados.get(j) instanceof Aprobado)
+                        {
+                            Aprobado alumno = (Aprobado)estados.get(j);
+                            if (alumno.getBeca())
+                            {
+                                return 1;
+                            }else
+                            {
+                                return 2;
+                            }
+                        }
+                        else if (estados.get(j) instanceof Repitente)
+                        {
+                            Repitente alumno = (Repitente)estados.get(j);
+                            if (alumno.getRendirEvaluacionFinal()){
+                                return 3;
+                            }else{
+                                return 4;
+                            }
+                                
+                        }    
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+    
     public boolean deleteAlumno (String rutAlumno)
     {
         String cursoAlumno = buscarAlumno(rutAlumno);
