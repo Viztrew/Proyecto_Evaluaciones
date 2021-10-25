@@ -41,7 +41,7 @@ public class Unidad {
     
     public void addAlumnoUnidad(String rutAlumno)
     {
-        
+        setNota(0.0, rutAlumno, true);
         this.listaRutAlumnos.add(rutAlumno);
     }
     public boolean deleteAlumno(String rutAlumno)

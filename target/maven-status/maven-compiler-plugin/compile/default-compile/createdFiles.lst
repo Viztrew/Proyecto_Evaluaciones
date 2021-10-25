@@ -1,7 +1,10 @@
 com\mycompany\proyectopoo\ManejoDeCursos.class
 com\mycompany\proyectopoo\ManejoDeCSV.class
+com\mycompany\proyectopoo\AlumnoMatricula.class
 com\mycompany\proyectopoo\Curso.class
 com\mycompany\proyectopoo\Proyecto.class
+com\mycompany\proyectopoo\EstadoMatricula.class
 com\mycompany\proyectopoo\Asignatura.class
+com\mycompany\proyectopoo\Repitente.class
 com\mycompany\proyectopoo\Unidad.class
-.netbeans_automatic_build
+com\mycompany\proyectopoo\Aprobado.class

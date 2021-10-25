@@ -1,12 +1,11 @@
 package com.mycompany.proyectopoo;
 import java.util.ArrayList;
-import java.util.HashMap;
 public class Curso {
     //Instancias de clase
     private String nombreCurso;
     private ArrayList<Asignatura> listaAsignaturas;
     private ArrayList<String> listaRutAlumnos;
-    
+    private ArrayList<AlumnoMatricula> listaEstadoAlumno;
     
     //Constructor
     public Curso(String nombreCurso) {
@@ -15,15 +14,21 @@ public class Curso {
         this.listaRutAlumnos = new ArrayList<>();
         
         this.listaAsignaturas = new ArrayList<>();
+        
+        this.listaEstadoAlumno = new ArrayList<>();
+        
     } 
     
     public Curso(String nombreCurso,ArrayList<String>listaRutAlumnos) {
         this.nombreCurso = nombreCurso;
         
         this.listaRutAlumnos = new ArrayList<>();
+        
         this.listaRutAlumnos.addAll(listaRutAlumnos);
         
         this.listaAsignaturas = new ArrayList<>();
+        
+        this.listaEstadoAlumno = new ArrayList<>();
     } 
     
     public Curso(String nombreCurso, String [] asignaturasCurso , String [] unidadesAsigUnidos) {
@@ -37,12 +42,14 @@ public class Curso {
             Asignatura asig = new Asignatura(asignaturasCurso[i],unidadesAsigSeparados,this.listaRutAlumnos);
             this.listaAsignaturas.add(asig);
         }
+        this.listaEstadoAlumno = new ArrayList<>();
     } 
     
     public Curso(String nombreCurso, ArrayList<String>listaRutAlumnos, String [] asignaturasCurso , String [] unidadesAsigUnidos) {
         this.nombreCurso = nombreCurso;
         
         this.listaRutAlumnos = new ArrayList<>();
+        
         this.listaRutAlumnos.addAll(listaRutAlumnos);
         
         this.listaAsignaturas = new ArrayList<>();
@@ -51,6 +58,7 @@ public class Curso {
             Asignatura asig = new Asignatura(asignaturasCurso[i],unidadesAsigSeparados,this.listaRutAlumnos);
             this.listaAsignaturas.add(asig);
         }
+        this.listaEstadoAlumno = new ArrayList<>();
     } 
    
     //Metodos
@@ -95,6 +103,17 @@ public class Curso {
         }
     }
     
+    public void addEstadoAlumno(AlumnoMatricula estado)
+    {
+        this.listaEstadoAlumno.add(estado);
+    }
+    public ArrayList<AlumnoMatricula> getEstadoCurso()
+    {
+        ArrayList<AlumnoMatricula> estados = new ArrayList<>();
+        for (int i = 0 ; i < this.listaEstadoAlumno.size() ; i++)
+            estados.add(this.listaEstadoAlumno.get(i));
+        return estados;
+    }
     public ArrayList<String> getListaRuts ()
     {
         ArrayList <String> listaRuts = new ArrayList <String>();
@@ -193,6 +212,19 @@ public class Curso {
         }
         return false;
     }
+    public boolean replaceAlumnoMatricula(AlumnoMatricula original, AlumnoMatricula nuevo)
+    {
+        
+        if(this.listaEstadoAlumno.contains(original))
+        {
+            int  i = this.listaEstadoAlumno.indexOf(original);
+            this.listaEstadoAlumno.remove(original);
+            this.listaEstadoAlumno.add(i,nuevo);
+            return true;
+        }
+        return false;
+    }
+    
     
     //Getters y Setters
     public String getNombreCurso() {

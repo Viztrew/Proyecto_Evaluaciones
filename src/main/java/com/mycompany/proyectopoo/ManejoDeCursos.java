@@ -9,7 +9,7 @@ public class ManejoDeCursos {
          //Se crea un arrayList para guardar los cursos que se leeran del csv en la funcion leerParametroCSV
     private ArrayList<String> listaCursos;
     private ArrayList<Curso> cursos;
-        
+
     ManejoDeCursos(){
         this.listaCursos = leerParametroCSV("Curso","Cursos.csv");
         this.cursos = new ArrayList<>();
@@ -42,6 +42,7 @@ public class ManejoDeCursos {
         for (int i = 0; i < this.cursos.size(); i++ )
             leerBancoDePreguntasCSV(cursos.get(i));
         
+        //se leen y guardan las notas guardadas en el CSV
         for (int i = 0; i < this.cursos.size(); i++ )
             leerNotasCSV(cursos.get(i));
         
@@ -180,7 +181,148 @@ public class ManejoDeCursos {
             System.out.print("\n");
         }
     }
+    public void matriculaFinal() {
+        for (int i = 0; i < this.cursos.size(); i++ )
+        {
+            ArrayList<String> nombresCursos = getNombreCursos();
+            ArrayList<String> rutsAlumnos = cursos.get(i).getListaRuts();
+            if (rutsAlumnos.isEmpty()!=true)
+            {
+                // Se calcula el promedio final del alumno y se llama al constructor correspondiente dado los siguientes parametros y se guardan en una arraylist de Curso
+                // Aprueba con beca: promedio >= 6.5
+                // Aprueba sin beca: promedio >= 4
+                // Reprueban (sin derecho a examen): promedio < 3
+                // Reprueban (con derecho a examen): 4 > promedio >= 3
+                for(int j=0 ; j<rutsAlumnos.size(); j++){  
+                    
+                    // los aprobados que tengan promedio >=6.5 ya tienen su beca asegurada y no tienen derecho a rendir la ultima prueba (true(beca),false(prueba))
+                    if((getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j))) >= 4){
+                        if((getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j))) >= 6.5){
+                            Aprobado a = new Aprobado(rutsAlumnos.get(j),getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j)),true,false);
+                            cursos.get(i).addEstadoAlumno(a);
+                        }
+                        else{
+                            // los aprobados que no tengan su beca, podrán rendir la prueba, si su nota es mayora a 6.5 obtienen beca  (false(beca),true(prueba))
+                            Aprobado a = new Aprobado(rutsAlumnos.get(j),getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j)),false,true);
+                            cursos.get(i).addEstadoAlumno(a);
+                        }
+                    }
+                    // los repitentes que tengan un promedio >= 3 tienen tienen una posibildiad de dar un examen, si su nota cumple con los parametros, su situacionAcademica cambia a true(pasa de curso)
+                    // (false(repiten), true(examen)
+                    if((getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j))) < 4){
+                        if((getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j))) >= 3){
+                            Repitente a = new Repitente(rutsAlumnos.get(j),getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j)), false,true);
+                            cursos.get(i).addEstadoAlumno(a);
+                        }
+                        else{
+                            // si el alumno no tiene notas (no se puede sacar su promedio), se le asigna promedio 1.0 y no tiene derecho a examen por tanto repite curso (false,false)
+                            if (getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j))==0.0)
+                            {
+                                Repitente a = new Repitente(rutsAlumnos.get(j),1.0,false,false);
+                                cursos.get(i).addEstadoAlumno(a);
+                            }else
+                            {
+                                Repitente a = new Repitente(rutsAlumnos.get(j),getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j)),false,false);
+                                cursos.get(i).addEstadoAlumno(a);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }    
     
+    // Metodo que muestra en pantalla los estado de los alumnos ya sean aprobado o reprobados
+    // si reprobados es true, mostrara reprobados, si no, los omite.
+    // si aprobados es true, mostrará aprobados, si no, los omite
+    public void mostrarEstadoAlumnos (boolean reprobados, boolean aprobados)
+    {
+        for (int i = 0; i < this.cursos.size(); i++ )
+        {
+            ArrayList <AlumnoMatricula> estados =  this.cursos.get(i).getEstadoCurso();
+            if (aprobados && reprobados)
+            {
+                System.out.println("Alumnos de " +this.cursos.get(i).getNombreCurso()+": ");
+                if (estados.isEmpty()){
+                    System.out.println("El curso " + this.cursos.get(i).getNombreCurso() + " no tiene alumnos registrados.");
+                }  
+            }
+            for (int j =0 ; j < estados.size() ; j++)
+            {
+                if (estados.get(j) instanceof Aprobado && aprobados)
+                {
+                    Aprobado estadoAlumno = (Aprobado)estados.get(j);
+                    if (estadoAlumno.getBeca())
+                    {
+                        System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: APROBADO CON BECA");
+                    }else
+                    {
+                        System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: APROBADO SIN BECA");
+                    }
+                }else if (estados.get(j) instanceof Repitente && reprobados)
+                {
+                    Repitente estadoAlumno = (Repitente)estados.get(j);
+                    if(estadoAlumno.getRendirEvaluacionFinal())
+                    {
+                        System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: REPROBADO CON DERECHO A EXAMEN");
+                    }else
+                    {
+                        System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: REPROBADO SIN DERECHO A EXAMEN");
+                    }
+                }
+            }
+            if (aprobados && reprobados)
+            {
+                
+                System.out.print("\n");
+            }
+        }
+        System.out.print("\n");
+    }
+    
+    // fncion que muestra los alumnos que pueden rendir la evaluacion final (RendirEvaluacionFinal == true)
+    public void mostrarAlumnosEvaluacionFinal()
+    {
+        for (int i = 0; i < this.cursos.size(); i++ )
+        {
+            ArrayList <AlumnoMatricula> estados =  this.cursos.get(i).getEstadoCurso();
+            for (int j =0 ; j < estados.size() ; j++)
+            {
+                if (estados.get(j) instanceof Aprobado)
+                {
+                    Aprobado estadoAlumno = (Aprobado)estados.get(j);
+                    if(estadoAlumno.getRendirEvaluacionFinal()){
+                        System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: APROBADO SIN BECA");
+                        System.out.print("\n");
+                    }
+                }else if (estados.get(j) instanceof Repitente)
+                {
+                    Repitente estadoAlumno = (Repitente)estados.get(j);
+                    if(estadoAlumno.getRendirEvaluacionFinal())
+                    {
+                        System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: REPROBADO CON DERECHO A EXAMEN");
+                        System.out.print("\n");
+                    }
+                }
+            }
+            
+        }
+    }
+    /*
+    public int  AprobadoReprobado(String rutAlumno){
+
+             
+        for(int i = 0; i < listaAprobados.size(); i++){
+            if ((listaAprobados.get(i).getRutPersona()).toLowerCase().equals(rutAlumno.toLowerCase()))
+            {
+                if(listaAprobados.get(i).getBeca()==true){
+                    return 1;
+                }
+            }
+        }
+        return 0;
+    }*/
+
     public void mostrarAlumnosCurso(String nombreCurso)
     {
         for (int i = 0; i < this.cursos.size() ; i++ )
@@ -402,6 +544,45 @@ public class ManejoDeCursos {
         }
         return false;
     }
+    public boolean validarAlumnoEvaluacion(String rutAlumno)
+    {
+        String nombreCurso = buscarAlumno(rutAlumno);
+        for (int i = 0; i < this.cursos.size() ; i++ )
+        {
+            if ((cursos.get(i).getNombreCurso()).equals(nombreCurso))
+            {
+                ArrayList<AlumnoMatricula> estados = this.cursos.get(i).getEstadoCurso();
+                for (int j = 0 ; j < estados.size() ; j++)
+                {
+                    if (estados.get(j).getRutPersona().toLowerCase().equals(rutAlumno.toLowerCase()))
+                    {
+                        if (estados.get(j) instanceof Aprobado)
+                        {
+                            Aprobado alumno = (Aprobado)estados.get(j);
+                            if (alumno.getBeca()!=true)
+                            {
+                                return true;
+                            }else
+                            {
+                                return false;
+                            }
+                        }else if (estados.get(j) instanceof Repitente)
+                        {
+                            Repitente alumno = (Repitente)estados.get(j);
+                            if (alumno.getRendirEvaluacionFinal())
+                            {
+                                return true;
+                            }else
+                            {
+                                return false;
+                            }
+                        }    
+                    }
+                }
+            }
+        }
+        return false;
+    }
     public boolean verificarAsigDeCurso(String nombreCurso)
     {
         for (int i = 0; i < this.cursos.size(); i++ ){
@@ -513,7 +694,44 @@ public class ManejoDeCursos {
             }
         }
     }
-
+    
+    //funcion que añade la nota final a la clase correspondiente (aprobado/repitente)
+    
+    public void addNotaEvaluacionFinal(String rutAlumno,double notaAlumno)
+    {
+        String nombreCurso = buscarAlumno(rutAlumno);
+        for (int i = 0; i < this.cursos.size() ; i++ )
+        {
+            if ((cursos.get(i).getNombreCurso()).equals(nombreCurso))
+            {
+                ArrayList<AlumnoMatricula> estados = this.cursos.get(i).getEstadoCurso();
+                for (int j = 0 ; j < estados.size() ; j++)
+                {
+                    if (estados.get(j).getRutPersona().toLowerCase().equals(rutAlumno.toLowerCase()))
+                    {
+                        // si la nota pertenece a un aprobado, y la nota es  6.5, solamente se reemplaza la variable beca, por true
+                        if (estados.get(j) instanceof Aprobado)
+                        {
+                            Aprobado alumno = (Aprobado)estados.get(j);
+                            alumno.evaluacionFinal(notaAlumno);
+                            
+                        }// En cambio si es un repitente, y la suma del 40% de su nota final mas el 60% de su promedio final es mayor a 4.5, pertenecerá a la clase Aprobado ("situacionAcademica" = true).
+                        // todos sus datos se guardaran en alumnoAprobado y guardada en la listaEstadoAlumno de Curso
+                        else if (estados.get(j) instanceof Repitente)
+                        {
+                            Repitente alumno = (Repitente)estados.get(j);
+                            alumno.evaluacionFinal(notaAlumno);
+                            if (alumno.getSituacionAcademica())
+                            {
+                                Aprobado alumnoAprobado = new Aprobado(alumno.getRutPersona(),alumno.getPromedioFinal(),false,false);
+                                this.cursos.get(i).replaceAlumnoMatricula(alumno,alumnoAprobado);
+                            }
+                        }    
+                    }
+                }
+            }
+        }
+    }
     public ArrayList<String> getNombreCursos()
     {
         ArrayList<String> nombreCursos = new ArrayList<>();

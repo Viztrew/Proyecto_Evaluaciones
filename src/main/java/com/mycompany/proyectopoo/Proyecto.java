@@ -3,12 +3,9 @@ package com.mycompany.proyectopoo;
 
 import static com.mycompany.proyectopoo.ManejoDeCSV.generarNotasCSV;
 import java.io.*;
-import static java.lang.Math.round;
-import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Scanner;
-import java.util.logging.*;
 import org.apache.commons.math3.util.Precision;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -19,7 +16,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-public class Proyecto {
+public abstract class Proyecto implements EstadoMatricula{
     
     public static void main(String [] arg) throws IOException 
     {
@@ -35,6 +32,10 @@ public class Proyecto {
         double notaAlumno;
         boolean atras;
         boolean salir = true;
+        double promedio;
+        Aprobado alum1 = null;
+        Repitente alum2 = null;
+        int estadoAlumno;
         
         ManejoDeCursos c = new ManejoDeCursos();
         c.crearCursos();
@@ -46,6 +47,7 @@ public class Proyecto {
             System.out.println("[2] Agregar/Llenar datos");
             System.out.println("[3] Eliminar datos");
             System.out.println("[4] Modificar datos");
+            System.out.println("[5] Finalizar año Escolar");
             System.out.println("[0] Salir");
             System.out.println("Ingrese opción: ");
             opcion = lector.nextInt(); // Ingresan opcion            
@@ -53,6 +55,8 @@ public class Proyecto {
             switch (opcion){
                 case 0: 
                     salir = false;
+                    
+        
                     generarReporte(c);
                     break;
                 case 1: // Impresion de datos
@@ -60,7 +64,7 @@ public class Proyecto {
                     do{
                         // Menu
                         System.out.print("\n");
-                        System.out.println("Opcion: IMPRESIÓN DE DATOS");
+                        System.out.println("Opción: IMPRESIÓN DE DATOS");
                         System.out.println("[1] Mostrar cursos");
                         System.out.println("[2] Mostrar Alumnos de TODOS los cursos");
                         System.out.println("[3] Mostrar Alumnos de curso específico");
@@ -79,15 +83,15 @@ public class Proyecto {
                                 atras = false;
                                 break;
                             case 1:
-                                System.out.println("Opcion: IMPRESION DE CURSOS");
+                                System.out.println("Opción: IMPRESION DE CURSOS");
                                 c.mostrarNombreCursos();
                                 break;
                             case 2: 
-                                System.out.println("Opcion: IMPRESION DE TODOS LOS ALUMNOS");
+                                System.out.println("Opción: IMPRESION DE TODOS LOS ALUMNOS");
                                 c.mostrarTodosAlumnos();
                                 break;
                             case 3:
-                                System.out.println("Opcion: IMPRESION DE LOS ALUMNOS DE UN CURSO ESPECIFICO");
+                                System.out.println("Opción: IMPRESION DE LOS ALUMNOS DE UN CURSO ESPECIFICO");
                                 do
                                 {
                                     System.out.println("Cursos en el sistema:");
@@ -130,7 +134,7 @@ public class Proyecto {
                                 c.mostrarNotasAlumnos(nombreCurso);
                                 break;
                             case 7:
-                                System.out.println("Opcion: IMPRESION DE PROMEDIO DE NOTAS DE UNA UNIDAD");
+                                System.out.println("Opción: IMPRESION DE PROMEDIO DE NOTAS DE UNA UNIDAD");
                                 System.out.println("Para mostrar el promedio de notas de una Unidad, debe especificar Curso, Asigantura y Unidad");
                                 do
                                 {
@@ -191,14 +195,18 @@ public class Proyecto {
                                         System.out.print("\n");
                                     }
                                 }while( c.validarAlumno(rutAlumno)!=true);
-                                if (c.getPromedioAlumno(c.buscarAlumno(rutAlumno), rutAlumno)==0.0)
+                                promedio = c.getPromedioAlumno(c.buscarAlumno(rutAlumno), rutAlumno);
+                                if (promedio==0.0)
                                 {
                                     System.out.println("El Alumno '"+rutAlumno+"' no tiene notas ingresadas, no es posible obtener su promedio.");
                                 }else{
-                                    System.out.println("El promedio de notas del Alumno '"+rutAlumno+"'"+" es "+c.getPromedioAlumno(c.buscarAlumno(rutAlumno), rutAlumno));
+                                    System.out.println("El promedio de notas del Alumno '"+rutAlumno+"'"+" es "+promedio);
                                 }
-                                
+                                reportarEstado(promedio);
                                 break;
+                                
+                            
+                                
                             default:
                                 System.out.println("Ingrese opción válida:");
                                 opcion2 = lector.nextInt();
@@ -228,7 +236,7 @@ public class Proyecto {
                                 break;
                                 
                             case 1:
-                                System.out.println("Opcion: AGREGAR CURSO AL SISTEMA");
+                                System.out.println("Opción: AGREGAR CURSO AL SISTEMA");
                                 do
                                 {
                                     System.out.println("Cursos en el sistema:");
@@ -253,7 +261,7 @@ public class Proyecto {
                                 c.addCurso(nombreCurso);
                                 break;
                             case 2: 
-                                System.out.println("Opcion: AGREGAR ASIGNATURA AL CURSO");
+                                System.out.println("Opción: AGREGAR ASIGNATURA AL CURSO");
                                 System.out.println("Para agregar una Asignatura, debe especificar su Curso.");
                                 do
                                 {
@@ -307,7 +315,7 @@ public class Proyecto {
                                 break;
                                 
                             case 3: 
-                                System.out.println("Opcion: AGREGAR UNIDAD A ASIGNATURA");
+                                System.out.println("Opción: AGREGAR UNIDAD A ASIGNATURA");
                                 System.out.println("Para agregar una Unidad, debe especificar Curso y Asigantura");
                                 do
                                 {
@@ -361,7 +369,7 @@ public class Proyecto {
                                 break;
                                 
                             case 4:
-                                System.out.println("Opcion: AGREGAR ALUMNO AL CURSO");
+                                System.out.println("Opción: AGREGAR ALUMNO AL CURSO");
                                 System.out.println("Para agregar un alumno, debe especificar su Curso de destino.");
                                 do
                                 {
@@ -398,7 +406,7 @@ public class Proyecto {
                                 c.addAlumnoACurso(nombreCurso,datoAGuardar);
                                 break;
                             case 5:
-                                System.out.println("Opcion: AGREGAR NOTA A ALUMNO");
+                                System.out.println("Opción: AGREGAR NOTA A ALUMNO");
                                 System.out.println("Para agregar una Nota a un Alumno, debe especificar su Curso, Asigantura y Unidad");
                                 do
                                 {
@@ -488,7 +496,7 @@ public class Proyecto {
                                 break;
                                 
                             case 6:
-                                System.out.println("Opcion: AGREGAR BANCO DE PREGUNTAS A UNIDAD");
+                                System.out.println("Opción: AGREGAR BANCO DE PREGUNTAS A UNIDAD");
                                 System.out.println("Para ingresar un banco de preguntas, debe especificar Curso, Asigantura y Unidad de las preguntas");
                                 do
                                 {
@@ -523,7 +531,7 @@ public class Proyecto {
                                     do{
                                         // subMenu
                                         System.out.print("\n");
-                                        System.out.println("Opcion: Llenado banco de preguntas de " +nombreCurso+"-"+ nombreAsig+"-"+nombreUnidad);
+                                        System.out.println("Opción: Llenado banco de preguntas de " +nombreCurso+"-"+ nombreAsig+"-"+nombreUnidad);
                                         System.out.println("[1] Ingresar pregunta");
                                         System.out.println("[2] Mostrar banco de preguntas");
                                         System.out.println("[0] Atras"); 
@@ -567,7 +575,7 @@ public class Proyecto {
                                 
                                 break;
                             default:
-                                System.out.println("Ingrese opcion valida");
+                                System.out.println("Ingrese opción valida");
                                 opcion2 = lector.nextInt();
                         }
                     }while(atras);
@@ -577,7 +585,7 @@ public class Proyecto {
                     do
                     {
                         System.out.print("\n");
-                        System.out.println("Opcion: ELIMINAR DATOS");
+                        System.out.println("Opción: ELIMINAR DATOS");
                         System.out.println("[1] Eliminar Alumno de Curso");
                         System.out.println("[2] Eliminar Nota Alumno");
                         System.out.println("[0] Atrás"); 
@@ -592,7 +600,7 @@ public class Proyecto {
                             case 1:
                                 do
                                 {
-                                    System.out.println("Opcion: ELIMINAR ALUMNO DE CURSO");
+                                    System.out.println("Opción: ELIMINAR ALUMNO DE CURSO");
                                     System.out.println("Alumnos en el sistema: ");
                                     c.mostrarTodosAlumnos();
                                     System.out.print("\n");
@@ -622,7 +630,7 @@ public class Proyecto {
                                 }
                                 break;
                             case 2:
-                                System.out.println("Opcion: ELIMINAR NOTA A ALUMNO");
+                                System.out.println("Opción: ELIMINAR NOTA A ALUMNO");
                                 System.out.println("Para eliminar una Nota a un Alumno, debe especificar su Curso, Asigantura y Unidad. Ádemas debe tener la Nota ingresada.");
                                 do
                                 {
@@ -708,7 +716,7 @@ public class Proyecto {
                     do
                     {
                         System.out.print("\n");
-                        System.out.println("Opcion: MODIFICAR DATOS");
+                        System.out.println("Opción: MODIFICAR DATOS");
                         System.out.println("[1] Modificar RUT Alumno de Curso");
                         System.out.println("[2] Modificar Nota a Alumno");
                         System.out.println("[0] Atrás"); 
@@ -723,7 +731,7 @@ public class Proyecto {
                             case 1:
                                 do
                                 {
-                                    System.out.println("Opcion: MODIFICAR RUT DE ALUMNO DE CURSO");
+                                    System.out.println("Opción: MODIFICAR RUT DE ALUMNO DE CURSO");
                                     System.out.println("Alumnos en el sistema: ");
                                     c.mostrarTodosAlumnos();
                                     System.out.print("\n");
@@ -760,7 +768,7 @@ public class Proyecto {
                                 }
                                 break;
                             case 2:
-                                System.out.println("Opcion: MODIFICAR NOTA A ALUMNO");
+                                System.out.println("Opción: MODIFICAR NOTA A ALUMNO");
                                 System.out.println("Para modificar una Nota a un Alumno, debe especificar su Curso, Asigantura y Unidad. Ádemas debe tener la Nota ingresada.");
                                 do
                                 {
@@ -842,6 +850,96 @@ public class Proyecto {
                                 
                     }while(atras);
                     break;
+                case 5: 
+                    atras=true;
+                    do{
+                        System.out.print("\n");
+                        System.out.println("Opción: FINALIZAR AÑO ESCOLAR");
+                        System.out.println("UNA VEZ FINALIZADO EL AÑO NO PODRÁS AÑADIR/MODIFICAR/ELIMINAR MAS DATOS");
+                        System.out.println("[1] Finalizar año");
+                        System.out.println("[0] Atrás"); 
+                        System.out.println("Ingrese opción: ");
+                        opcion2 = lector.nextInt();         
+                        lector.nextLine();
+                        System.out.print("\n");
+                        switch(opcion2)
+                        {
+                            case 0:
+                                atras=false;
+                                break;
+                            case 1:
+                                c.matriculaFinal();
+                                System.out.println("Notas cerradas.");
+                                System.out.println("Estado de Alumnos creados.");
+                                do
+                                {
+                                    System.out.println("Opción: FINALIZAR AÑO");
+                                    System.out.println("[1] Mostrar estados de Alumnos(Aprobado/Reprobado) de TODOS los Cursos");
+                                    System.out.println("[2] Mostrar SOLO Alumnos Aprobados");
+                                    System.out.println("[3] Mostrar SOLO Alumnos Reprobados");
+                                    System.out.println("[4] Ingresar Nota de Evaluación Final (Exámen)");
+                                    System.out.println("[0] Salir"); 
+                                    System.out.println("Ingrese opción: ");
+                                    opcion2 = lector.nextInt();         
+                                    lector.nextLine();
+                                    System.out.print("\n");
+                                    switch(opcion2)
+                                    {
+                                        case 0:
+                                            salir=false;
+                                            atras=false;
+                                            break;
+                                        case 1:
+                                            System.out.println("Opción: MOSTRAR ESTADO DE ALUMNOS (APROBADO/REPROBADO) DE TODOS LOS CURSOS");
+                                            c.mostrarEstadoAlumnos(true,true);
+                                            break;
+                                        case 2:
+                                            System.out.println("Opción: MOSTRAR SOLO ALUMNOS APROBADOS");
+                                            c.mostrarEstadoAlumnos(false,true);
+                                            break;
+                                        case 3:
+                                            System.out.println("Opción: MOSTRAR SOLO ALUMNOS REPROBADOS");
+                                            c.mostrarEstadoAlumnos(true,false);
+                                            break;
+                                        case 4:    
+                                            do
+                                            {
+                                                System.out.println("Opción: INGRESAR NOTA EVALUACIÓN FINAL");
+                                                System.out.println("Alumnos que pueden rendir evaluación: ");
+                                                c.mostrarAlumnosEvaluacionFinal();
+                                                System.out.print("\n");
+                                                System.out.println("Ingrese RUT del alumno sin puntos y con guión (Ej:20132111-k):");
+                                                rutAlumno = lector.nextLine();  
+                                                System.out.print("\n");
+                                                if (c.validarAlumnoEvaluacion(rutAlumno) != true) 
+                                                {
+                                                    System.out.println("El Alumno '"+rutAlumno+"' no esta admitido a rendir Evaluación final, intente nuevamente");
+                                                    System.out.print("\n");
+                                                }
+                                            }while( c.validarAlumnoEvaluacion(rutAlumno) != true);
+                                            do
+                                            {
+                                                System.out.println("Ingrese Nota para el Alumno "+ rutAlumno +" en la Evaluación Final (1.0-7.0):");
+                                                notaAlumno=Double.parseDouble(lector.nextLine());
+                                                System.out.print("\n");
+                                                if((notaAlumno >= 1.0 && notaAlumno <= 7.0))
+                                                {
+                                                    c.addNotaEvaluacionFinal(rutAlumno,notaAlumno);
+                                                    System.out.println("Nota Ingresada. \n");
+                                                }else
+                                                {
+                                                    System.out.println("Formato inválido, intente nuevamente ingresando un número entre 1.0 y 7.0.");
+                                                    System.out.print("\n");
+                                                }
+                                            }while((notaAlumno >= 1.0 && notaAlumno <= 7.0)==false);
+                                            break;
+                                    }
+                                }while(salir);
+                                break;
+                        }
+                               
+                    }while(atras);
+                    break;
                 default:
                     System.out.println("Ingrese opción valida: ");
                     opcion = lector.nextInt();
@@ -849,6 +947,24 @@ public class Proyecto {
             
         }while(salir);
     }
+    
+    // Metodos
+    public static void reportarEstado(double promedio){
+        String estado;
+        if(promedio >= 4.0){
+            estado = aprobado;
+        }
+        else{
+            if(promedio == 0.0){
+            estado = desconocido;
+            }
+            else{
+                estado = reprobado;
+            }
+        }
+        System.out.println(estado);
+    }
+    
     // se genera un reporte de los datos guardados, generando un reporte de cada curso con sus asignaturas, unidades, alumnos y sus notas
     public static void generarReporte(ManejoDeCursos c) throws IOException
     {
