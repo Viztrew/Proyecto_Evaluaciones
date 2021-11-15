@@ -42,7 +42,7 @@ public class ManejoDeCursos {
         for (int i = 0; i < this.cursos.size(); i++ )
             leerBancoDePreguntasCSV(cursos.get(i));
         
-        //se leen y guardan las notas guardadas en el CSV
+        //se leen y guardan las notas almacenadas en el CSV
         for (int i = 0; i < this.cursos.size(); i++ )
             leerNotasCSV(cursos.get(i));
         
@@ -211,18 +211,18 @@ public class ManejoDeCursos {
                     // (false(repiten), true(examen)
                     if((getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j))) < 4){
                         if((getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j))) >= 3){
-                            Repitente a = new Repitente(rutsAlumnos.get(j),getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j)), false,true);
+                            Reprobado a = new Reprobado(rutsAlumnos.get(j),getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j)), false,true);
                             cursos.get(i).addEstadoAlumno(a);
                         }
                         else{
                             // si el alumno no tiene notas (no se puede sacar su promedio), se le asigna promedio 1.0 y no tiene derecho a examen por tanto repite curso (false,false)
                             if (getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j))==0.0)
                             {
-                                Repitente a = new Repitente(rutsAlumnos.get(j),1.0,false,false);
+                                Reprobado a = new Reprobado(rutsAlumnos.get(j),1.0,false,false);
                                 cursos.get(i).addEstadoAlumno(a);
                             }else
                             {
-                                Repitente a = new Repitente(rutsAlumnos.get(j),getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j)),false,false);
+                                Reprobado a = new Reprobado(rutsAlumnos.get(j),getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j)),false,false);
                                 cursos.get(i).addEstadoAlumno(a);
                             }
                         }
@@ -259,9 +259,9 @@ public class ManejoDeCursos {
                     {
                         System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: APROBADO SIN BECA");
                     }
-                }else if (estados.get(j) instanceof Repitente && reprobados)
+                }else if (estados.get(j) instanceof Reprobado && reprobados)
                 {
-                    Repitente estadoAlumno = (Repitente)estados.get(j);
+                    Reprobado estadoAlumno = (Reprobado)estados.get(j);
                     if(estadoAlumno.getRendirEvaluacionFinal())
                     {
                         System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: REPROBADO CON DERECHO A EXAMEN");
@@ -295,9 +295,9 @@ public class ManejoDeCursos {
                         System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: APROBADO SIN BECA");
                         System.out.print("\n");
                     }
-                }else if (estados.get(j) instanceof Repitente)
+                }else if (estados.get(j) instanceof Reprobado)
                 {
-                    Repitente estadoAlumno = (Repitente)estados.get(j);
+                    Reprobado estadoAlumno = (Reprobado)estados.get(j);
                     if(estadoAlumno.getRendirEvaluacionFinal())
                     {
                         System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: REPROBADO CON DERECHO A EXAMEN");
@@ -566,9 +566,9 @@ public class ManejoDeCursos {
                             {
                                 return false;
                             }
-                        }else if (estados.get(j) instanceof Repitente)
+                        }else if (estados.get(j) instanceof Reprobado)
                         {
-                            Repitente alumno = (Repitente)estados.get(j);
+                            Reprobado alumno = (Reprobado)estados.get(j);
                             if (alumno.getRendirEvaluacionFinal())
                             {
                                 return true;
@@ -717,9 +717,9 @@ public class ManejoDeCursos {
                             
                         }// En cambio si es un repitente, y la suma del 40% de su nota final mas el 60% de su promedio final es mayor a 4.5, pertenecerá a la clase Aprobado ("situacionAcademica" = true).
                         // todos sus datos se guardaran en alumnoAprobado y guardada en la listaEstadoAlumno de Curso
-                        else if (estados.get(j) instanceof Repitente)
+                        else if (estados.get(j) instanceof Reprobado)
                         {
-                            Repitente alumno = (Repitente)estados.get(j);
+                            Reprobado alumno = (Reprobado)estados.get(j);
                             alumno.evaluacionFinal(notaAlumno);
                             if (alumno.getSituacionAcademica())
                             {
@@ -904,9 +904,9 @@ public class ManejoDeCursos {
                                 return 2;
                             }
                         }
-                        else if (estados.get(j) instanceof Repitente)
+                        else if (estados.get(j) instanceof Reprobado)
                         {
-                            Repitente alumno = (Repitente)estados.get(j);
+                            Reprobado alumno = (Reprobado)estados.get(j);
                             if (alumno.getRendirEvaluacionFinal()){
                                 return 3;
                             }else{
@@ -951,7 +951,6 @@ public class ManejoDeCursos {
         }
         return false;
     }
-    
     
     
 }

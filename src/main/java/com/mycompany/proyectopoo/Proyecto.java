@@ -3,6 +3,7 @@ package com.mycompany.proyectopoo;
 
 import static com.mycompany.proyectopoo.ManejoDeCSV.generarNotasCSV;
 import java.io.*;
+import static java.lang.Thread.sleep;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Scanner;
@@ -18,7 +19,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public abstract class Proyecto implements EstadoMatricula{
     
-    public static void main(String [] arg) throws IOException 
+    public static void main(String [] arg) throws IOException, InterruptedException
     {
         Scanner lector = new Scanner(System.in);
         int opcion;
@@ -33,12 +34,11 @@ public abstract class Proyecto implements EstadoMatricula{
         boolean atras;
         boolean salir = true;
         double promedio;
-        Aprobado alum1 = null;
-        Repitente alum2 = null;
-        int estadoAlumno;
-        
         ManejoDeCursos c = new ManejoDeCursos();
+        VentanaMostrar ventanaMostrar;
+        VentanaAgregar ventanaAgregar;
         c.crearCursos();
+        
         do{
             
             // Menu
@@ -48,6 +48,7 @@ public abstract class Proyecto implements EstadoMatricula{
             System.out.println("[3] Eliminar datos");
             System.out.println("[4] Modificar datos");
             System.out.println("[5] Finalizar año Escolar");
+            System.out.println("[6] Menú de ventanas");
             System.out.println("[0] Salir");
             System.out.println("Ingrese opción: ");
             opcion = lector.nextInt(); // Ingresan opcion            
@@ -85,6 +86,7 @@ public abstract class Proyecto implements EstadoMatricula{
                             case 1:
                                 System.out.println("Opción: IMPRESION DE CURSOS");
                                 c.mostrarNombreCursos();
+                                        
                                 break;
                             case 2: 
                                 System.out.println("Opción: IMPRESION DE TODOS LOS ALUMNOS");
@@ -92,6 +94,7 @@ public abstract class Proyecto implements EstadoMatricula{
                                 break;
                             case 3:
                                 System.out.println("Opción: IMPRESION DE LOS ALUMNOS DE UN CURSO ESPECIFICO");
+                                /* Aplicacion de impresión por consola
                                 do
                                 {
                                     System.out.println("Cursos en el sistema:");
@@ -101,7 +104,13 @@ public abstract class Proyecto implements EstadoMatricula{
                                     nombreCurso = lector.nextLine();
                                     System.out.print("\n");
                                 }while(c.validarCurso(nombreCurso)== false);
-                                c.mostrarAlumnosCurso(nombreCurso);
+                                c.mostrarAlumnosCurso(nombreCurso);*/
+                                
+                                //Aplicación de impresión con ventana
+                                
+                                ventanaMostrar = new VentanaMostrar("Alumnos");
+                                ventanaMostrar.setVisible(true);
+                                
                                 break;
                             case 4: 
                                 System.out.println("Opción: IMPRESION DE ASIGNATURAS Y UNIDADES DE TODOS LOS CURSOS");
@@ -109,6 +118,7 @@ public abstract class Proyecto implements EstadoMatricula{
                                 break;
                             case 5: 
                                 System.out.println("Opción: IMPRESION DE ASIGNATURAS Y UNIDADES DE UN CURSO ESPECÍFICO");
+                                /* Aplicacion de impresión por consola
                                 do
                                 {
                                     System.out.println("Cursos en el sistema:");
@@ -118,8 +128,13 @@ public abstract class Proyecto implements EstadoMatricula{
                                     nombreCurso=lector.nextLine();
                                     System.out.print("\n");
                                 }while(c.validarCurso(nombreCurso) == false);
-                                c.mostrarAsigYUnidadesCurso(nombreCurso);
+                                c.mostrarAsigYUnidadesCurso(nombreCurso);*/
+                                
+                                //Aplicación de impresión con ventana
+                                ventanaMostrar = new VentanaMostrar("Asignaturas");
+                                ventanaMostrar.setVisible(true);
                                 break;
+                                
                             case 6:
                                 System.out.println("Opción: IMPRESION DE NOTAS DE UN CURSO ESPECÍFICO");
                                 do
@@ -237,6 +252,7 @@ public abstract class Proyecto implements EstadoMatricula{
                                 
                             case 1:
                                 System.out.println("Opción: AGREGAR CURSO AL SISTEMA");
+                                /*
                                 do
                                 {
                                     System.out.println("Cursos en el sistema:");
@@ -258,7 +274,33 @@ public abstract class Proyecto implements EstadoMatricula{
                                         respuesta = "no";
                                     }
                                 }while (respuesta.equals("no"));
-                                c.addCurso(nombreCurso);
+                                c.addCurso(nombreCurso);*/
+                                
+                                ventanaAgregar = new VentanaAgregar();
+                                ventanaAgregar.setVisible(true);
+                                System.out.println("Ventana activa.");
+                                
+                                //do-while para controlar que la ventana se cierre antes de seguir con la aplicación
+                                do
+                                {
+                                    
+                                    if (ventanaAgregar.isActive())
+                                    {
+                                        if (ventanaAgregar.isDisplayable()!=true)
+                                        {
+                                            ventanaAgregar.setVisible(false);
+                                        }
+                                    }
+                                    sleep(2); // para no sobrecargar el procesador, dormimos al thread
+                                }while (ventanaAgregar.isVisible());
+                                
+                                System.out.println("Ventana cerrada.");
+                                
+                                // si se agregó un curso, se obtiene con los get de ventanaAgregar y se agregan a c (manejoDeCSV)
+                                if (ventanaAgregar.getAgregar())
+                                {
+                                    c.addCurso(ventanaAgregar.getCurso());
+                                }
                                 break;
                             case 2: 
                                 System.out.println("Opción: AGREGAR ASIGNATURA AL CURSO");
@@ -940,12 +982,33 @@ public abstract class Proyecto implements EstadoMatricula{
                                
                     }while(atras);
                     break;
+                case 6:
+                    System.out.println("Opción: MENÚ DE VENTANAS");
+                    VentanaMenu ventanaMenu = new VentanaMenu();
+                    ventanaMenu.setVisible(true);
+                    //do-while para controlar que la ventana se cierre antes de seguir con la aplicación
+                    do
+                    {
+
+                        if (ventanaMenu.isActive())
+                        {
+                            if (ventanaMenu.isDisplayable()!=true)
+                            {
+                                ventanaMenu.setVisible(false);
+                            }
+                        }
+                        sleep(2); // para no sobrecargar el procesador, dormimos al thread
+                    }while (ventanaMenu.isVisible());
+                    break;
                 default:
                     System.out.println("Ingrese opción valida: ");
                     opcion = lector.nextInt();
             }
             
         }while(salir);
+        
+        generarNotasCSV(c);
+        System.out.println("Notas Actualizadas.");
     }
     
     // Metodos
@@ -991,8 +1054,8 @@ public abstract class Proyecto implements EstadoMatricula{
     public static void generarReporte(ManejoDeCursos c) throws IOException
     {
         // Ademas de generar un reporte, también se generará el CSV de notas, para la proxima inicialización del programa
-        generarNotasCSV(c);
-        System.out.println("Notas Actualizadas.");
+        
+        
         // El reporte tendrá de nombre la fecha de creacion de este 
         Calendar fecha = Calendar.getInstance();
         String nombreArchivo = "Reporte "+Integer.toString(fecha.get(Calendar.DATE))+"-"+Integer.toString(fecha.get(Calendar.MONTH))+"-"+ Integer.toString(fecha.get(Calendar.YEAR));

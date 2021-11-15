@@ -52,10 +52,10 @@ public class ManejoDeCSV {
         }
         return listaParametros;
     }
-    /*Funcion que lee desde el archivo csv un parametro(Ej: Rut, Alumnos, Asignaturas) del curso especificado y 
-          lo retorna como lista con los elementos del parametro sin repetirse
-            Ej: leerParametroCursoCSV("Quinto", "Rut", "Alumnos.csv") retorna ArrayList<"10987546-2","20324521-k">
+    /*Funcion que lee desde el archivo csv los Alumnos del curso especificado y los retorna como ArrayList 
+            Ej: leerAlumnosCursoCSV("Quinto", "Alumnos.csv") retorna ArrayList<"10987546-2","20324521-k">
         */
+    
     public static ArrayList<String> leerAlumnosCursoCSV(String nombreCurso, String nombreArchivo) {
         
         ArrayList<String> listaParametro = new ArrayList<>();
@@ -105,7 +105,10 @@ public class ManejoDeCSV {
         }
         return listaParametro;
     }
-        
+        /*Funcion que lee desde el archivo csv un parametro(Ej: Rut, Alumnos, Asignaturas) del curso especificado y 
+          lo retorna como lista con los elementos del parametro sin repetirse(false) o repetido si es permitido (true)
+            Ej: leerParametroCursoCSV("Quinto","Rut", "Alumnos.csv",false) retorna ArrayList<"10987546-2","20324521-k">
+        */    
     public static ArrayList<String> leerParametroCursoCSV(String nombreCurso, String parametro, String nombreArchivo, boolean repetirValor) {
         
         ArrayList<String> listaParametro = new ArrayList<>();
