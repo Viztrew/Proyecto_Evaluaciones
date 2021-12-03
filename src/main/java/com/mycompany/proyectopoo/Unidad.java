@@ -116,6 +116,8 @@ public class Unidad {
             this.mapaNotasUnidad.put(rutAlumno, Precision.round(nota,1,1));
         }else
         {
+            
+            this.mapaNotasUnidad.put(rutAlumno, 0.0);
             throw new InvalidNotaInitializationException();
         }
         

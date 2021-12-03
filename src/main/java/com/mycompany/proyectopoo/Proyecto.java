@@ -1,6 +1,11 @@
 package com.mycompany.proyectopoo;
 
-
+import com.mycompany.proyectopoo.FormatoPreliminar;
+import com.mycompany.proyectopoo.FormatoPreliminarAprobado;
+import com.mycompany.proyectopoo.InvalidNotaInitializationException;
+import com.mycompany.proyectopoo.ManejoDeCursos;
+import com.mycompany.proyectopoo.VentanaAgregar;
+import com.mycompany.proyectopoo.VentanaMenu;
 import static com.mycompany.proyectopoo.ManejoDeCSV.generarNotasCSV;
 import java.io.*;
 import static java.lang.Thread.sleep;
@@ -38,17 +43,17 @@ public class Proyecto{
         VentanaMostrar ventanaMostrar;
         VentanaAgregar ventanaAgregar;
         c.crearCursos();
-       // c.addNotaAlumno("Primero", "Matematicas", "NumerosNaturales", "12123412-0", 8.0, true); // ejemplo de excepcion de nota invalida (InvalidNotaInitializationException)
+        //c.addNotaAlumno("Primero", "Matematicas", "NumerosNaturales", "12123412-0", 8.0, true); // ejemplo de excepcion de nota invalida (InvalidNotaInitializationException)
         do{
             
             // Menu
             System.out.println("---MENÚ PRINCIPAL---");
-            System.out.println("[1] Impresión de datos (2 Opciones con Ventana)");
+            System.out.println("[1] Impresión de datos (2 Opciones con Ventana)(Implementacion Patrón)");
             System.out.println("[2] Agregar/Llenar datos(1 Opción con Ventana)");
             System.out.println("[3] Eliminar datos");
             System.out.println("[4] Modificar datos");
-            System.out.println("[5] Finalizar año Escolar");
-            System.out.println("[6] Menú de ventanas");
+            System.out.println("[5] Finalizar año Escolar (Implementacion Patrón)");
+            System.out.println("[6] Menú de ventanas (Ventana)");
             System.out.println("[0] Salir");
             System.out.println("Ingrese opción: ");
             opcion = lector.nextInt(); // Ingresan opcion            
@@ -56,8 +61,6 @@ public class Proyecto{
             switch (opcion){
                 case 0: 
                     salir = false;
-                    
-        
                     generarReporte(c);
                     break;
                 case 1: // Impresion de datos
@@ -74,7 +77,7 @@ public class Proyecto{
                         System.out.println("[6] Mostrar Notas de alumnos de un curso");
                         System.out.println("[7] Mostrar Promedio de Notas de una Unidad");
                         System.out.println("[8] Mostrar Promedio de Notas de un Alumno");
-                        System.out.println("[9] Mostrar Estado Preliminar de Alumnos (Aprobando/Reprobando)");
+                        System.out.println("[9] Mostrar Estado Preliminar de Alumnos (Aprobando/Reprobando) (Patrón Strategy)");
                         System.out.println("[0] Atrás"); 
                         System.out.println("Ingrese opción: ");
                         opcion2 = lector.nextInt();         
@@ -224,9 +227,10 @@ public class Proyecto{
                                     do{
                                         // subMenu
                                         System.out.print("\n");
-                                        System.out.println("Opción: IMPRESIÓN ESTADO PRELIMINAR DE ALUMNOS (APROBANO/REPROBANDO)");
-                                        System.out.println("[1] Mostrar Alumnos Aprobando");
-                                        System.out.println("[2] Mostrar Alumnos Reprobando");
+                                        System.out.println("Opción: IMPRESIÓN ESTADO PRELIMINAR DE ALUMNOS (APROBANO/REPROBANDO) (PATRÓN STRATEGY)");
+                                        System.out.println("[1] Mostrar Todos los Estados Preliminares de los Alumnos (Aprobando y Reprobando)");
+                                        System.out.println("[2] Mostrar Alumnos Aprobando");
+                                        System.out.println("[3] Mostrar Alumnos Reprobando");
                                         System.out.println("[0] Atras"); 
                                         System.out.println("Ingrese opción: ");
                                         opcion2 = lector.nextInt();         
@@ -237,13 +241,18 @@ public class Proyecto{
                                                 atras = false;
                                                 break;
                                             case 1:
-                                                System.out.println("Opción: MOSTRAR SOLO ALUMNOS APROBADOS");
-                                                c.mostrarPromedioAlumnos(true);
+                                                System.out.println("Opción: MOSTRAR ALUMNOS APROBANDO Y REPROBANDO");
+                                                c.setFormatoEstado(new FormatoPreliminar());
                                                 break;
                                             case 2:
-                                                System.out.println("Opción: MOSTRAR SOLO ALUMNOS REPROBADOS");
-                                                c.mostrarPromedioAlumnos(false);
+                                                System.out.println("Opción: MOSTRAR SOLO ALUMNOS APROBADOS");
+                                                c.setFormatoEstado(new FormatoPreliminarAprobado());
                                                 break;
+                                            case 3:
+                                                System.out.println("Opción: MOSTRAR SOLO ALUMNOS REPROBADOS");
+                                                c.setFormatoEstado(new FormatoPreliminarReprobado());
+                                                break;
+                                            
                                             default:
                                                 System.out.println("Ingrese opción válida");
                                         }
@@ -947,7 +956,7 @@ public class Proyecto{
                                 System.out.println("Estado de Alumnos creados.");
                                 do
                                 {
-                                    System.out.println("Opción: FINALIZAR AÑO");
+                                    System.out.println("Opción: FINALIZAR AÑO (Opciones 1, 2 y 3 implementan patrón Strategy)");
                                     System.out.println("[1] Mostrar estados de Alumnos(Aprobado/Reprobado) de TODOS los Cursos");
                                     System.out.println("[2] Mostrar SOLO Alumnos Aprobados");
                                     System.out.println("[3] Mostrar SOLO Alumnos Reprobados");
@@ -965,15 +974,15 @@ public class Proyecto{
                                             break;
                                         case 1:
                                             System.out.println("Opción: MOSTRAR ESTADO DE ALUMNOS (APROBADO/REPROBADO) DE TODOS LOS CURSOS");
-                                            c.mostrarEstadoAlumnos(true,true);
+                                            c.setFormatoEstado(new FormatoFinal());
                                             break;
                                         case 2:
                                             System.out.println("Opción: MOSTRAR SOLO ALUMNOS APROBADOS");
-                                            c.mostrarEstadoAlumnos(false,true);
+                                            c.setFormatoEstado(new FormatoFinalAprobado());
                                             break;
                                         case 3:
                                             System.out.println("Opción: MOSTRAR SOLO ALUMNOS REPROBADOS");
-                                            c.mostrarEstadoAlumnos(true,false);
+                                            c.setFormatoEstado(new FormatoFinalReprobado());
                                             break;
                                         case 4:    
                                             do
@@ -1166,7 +1175,6 @@ public class Proyecto{
                         celda.setCellValue(notasAlumno.get(z));
                     }
                 }
-                
             }
         }
         

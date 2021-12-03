@@ -60,11 +60,13 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jLabelTitulo" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jLabelCurso" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jCampoTexto" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jBotonBuscar" alignment="3" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jLabelParametro" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jLabelCurso" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jCampoTexto" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jBotonBuscar" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">

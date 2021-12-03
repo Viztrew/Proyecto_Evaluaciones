@@ -382,53 +382,6 @@ public class ManejoDeCursos implements EstadoMatricula{
         }
     }    
     
-    // Metodo que muestra por consola los estado de los alumnos ya sean aprobado o reprobados
-    // si reprobados es true, mostrara reprobados, si no, los omite.
-    // si aprobados es true, mostrará aprobados, si no, los omite
-    public void mostrarEstadoAlumnos (boolean reprobados, boolean aprobados)
-    {
-        for (int i = 0 ; i < this.cursos.size() ; i++ )
-        {
-            ArrayList <AlumnoMatricula> estados =  this.cursos.get(i).getEstadoCurso();
-            if (aprobados && reprobados)
-            {
-                System.out.println("Alumnos de " +this.cursos.get(i).getNombreCurso()+": ");
-                if (estados.isEmpty()){
-                    System.out.println("El curso " + this.cursos.get(i).getNombreCurso() + " no tiene alumnos registrados.");
-                }  
-            }
-            for (int j = 0 ; j < estados.size() ; j++)
-            {
-                if (estados.get(j) instanceof AlumnoAprobado && aprobados)
-                {
-                    AlumnoAprobado estadoAlumno = (AlumnoAprobado)estados.get(j);
-                    if (estadoAlumno.getBeca())
-                    {
-                        System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: APROBADO CON BECA");
-                    }else
-                    {
-                        System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: APROBADO SIN BECA");
-                    }
-                }else if (estados.get(j) instanceof AlumnoReprobado && reprobados)
-                {
-                    AlumnoReprobado estadoAlumno = (AlumnoReprobado)estados.get(j);
-                    if(estadoAlumno.getRendirEvaluacionFinal())
-                    {
-                        System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: REPROBADO CON DERECHO A EXAMEN");
-                    }else
-                    {
-                        System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: REPROBADO SIN DERECHO A EXAMEN");
-                    }
-                }
-            }
-            if (aprobados && reprobados)
-            {
-                System.out.print("\n");
-            }
-        }
-        System.out.print("\n");
-    }
-    
     // método que muestra los alumnos que pueden rendir la evaluacion final (RendirEvaluacionFinal == true)
     public void mostrarAlumnosEvaluacionFinal()
     {
@@ -457,27 +410,8 @@ public class ManejoDeCursos implements EstadoMatricula{
         }
     }
     
-    // método que dependiendo del valor de aprobandoReprobando, muestra por consola los alumnos y sus promedios,
-    // si es true mostrará los que momentaneamente estrían aprobados y si es false, los reprobados
-    public void mostrarPromedioAlumnos(boolean aprobandoReprobando)
-    {
-        double promedio;
-        for (int i = 0 ; i < this.listaCursos.size() ; i++ )
-        {
-            ArrayList<String> alumnos = this.cursos.get(i).getListaRuts();
-            for (int j = 0 ; j < alumnos.size() ; j++ )
-            {
-                promedio = getPromedioAlumno(this.cursos.get(i).getNombreCurso(), alumnos.get(j));
-                if ((promedio>=4.0)&& (aprobandoReprobando))
-                {
-                    System.out.println("Alumno: " + alumnos.get(j) + " Promedio: " + promedio + " Aprobando" );
-                }else if ((promedio<4.0)&& (aprobandoReprobando!=true))
-                {
-                    System.out.println("Alumno: " + alumnos.get(j) + " Promedio : " + promedio + " Reprobando" );
-                }
-            }
-        }
-    }
+    
+    
 
     //método que valida si un curso está guardado en el sistema, retorna true en caso positivo y false en caso negativo 
     public boolean validarCurso(String nombreCurso)
@@ -1056,6 +990,14 @@ public class ManejoDeCursos implements EstadoMatricula{
                 break;
         }
         System.out.println("\n");
+    }
+    
+    // implementación de el patron Strategy
+    public void setFormatoEstado(FormatoEstadoAlumnos f)
+    {
+        ArrayList<Curso> auxCursos = new ArrayList<>();
+        auxCursos.addAll(this.cursos);
+        f.mostrarEstadoAlumnos(auxCursos);
     }
     
 }
