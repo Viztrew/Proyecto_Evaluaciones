@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.io.IOException;
 import static com.mycompany.proyectopoo.ManejoDeCSV.*;
 import org.apache.commons.math3.util.Precision;//se utiliza la dependencia org.apache.commons de matematicas para aproximar los numeros decimales con Precision.round
+
 public class ManejoDeCursos implements EstadoMatricula{
          //Se crea un arrayList para guardar los cursos que se leeran del csv en la funcion leerParametroCSV
     private ArrayList<String> listaCursos;
@@ -952,7 +953,7 @@ public class ManejoDeCursos implements EstadoMatricula{
         }
         return false;
     }
-    // implementacion de método contradados por la interfaz EstadoMatricula
+    // implementacion de método contratados por la interfaz EstadoMatricula
     public void reportarEstado(double promedio){
         String estado;
         if(promedio >= 4.0){
@@ -968,7 +969,7 @@ public class ManejoDeCursos implements EstadoMatricula{
         }
         System.out.println(estado);
     }
-    // implementacion de método contradados por la interfaz EstadoMatricula
+    // implementacion de método contratados por la interfaz EstadoMatricula
     public void actualizarEstado(int estado)
     {
         switch(estado)
@@ -993,11 +994,11 @@ public class ManejoDeCursos implements EstadoMatricula{
     }
     
     // implementación de el patron Strategy
-    public void setFormatoEstado(FormatoEstadoAlumnos f)
+    public void setFormatoEstado(FormatoEstadoAlumnos formato)
     {
         ArrayList<Curso> auxCursos = new ArrayList<>();
         auxCursos.addAll(this.cursos);
-        f.mostrarEstadoAlumnos(auxCursos);
+        formato.mostrarEstadoAlumnos(auxCursos);
     }
     
 }

@@ -3,7 +3,6 @@ package com.mycompany.proyectopoo;
 import com.mycompany.proyectopoo.FormatoPreliminar;
 import com.mycompany.proyectopoo.FormatoPreliminarAprobado;
 import com.mycompany.proyectopoo.InvalidNotaInitializationException;
-import com.mycompany.proyectopoo.ManejoDeCursos;
 import com.mycompany.proyectopoo.VentanaAgregar;
 import com.mycompany.proyectopoo.VentanaMenu;
 import static com.mycompany.proyectopoo.ManejoDeCSV.generarNotasCSV;
@@ -42,8 +41,12 @@ public class Proyecto{
         ManejoDeCursos c = new ManejoDeCursos();
         VentanaMostrar ventanaMostrar;
         VentanaAgregar ventanaAgregar;
+        
         c.crearCursos();
         //c.addNotaAlumno("Primero", "Matematicas", "NumerosNaturales", "12123412-0", 8.0, true); // ejemplo de excepcion de nota invalida (InvalidNotaInitializationException)
+        c.setFormatoEstado(new FormatoFinal());
+        c.setFormatoEstado(new FormatoFinalAprobado());
+        c.setFormatoEstado(new FormatoFinalReprobado());
         do{
             
             // Menu

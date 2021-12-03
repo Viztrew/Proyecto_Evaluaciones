@@ -14,12 +14,13 @@ com\mycompany\proyectopoo\VentanaMenu$3.class
 com\mycompany\proyectopoo\VentanaMostrar$4.class
 com\mycompany\proyectopoo\VentanaAgregar$3.class
 com\mycompany\proyectopoo\VentanaMostrar$1.class
-.netbeans_automatic_build
+com\mycompany\proyectopoo\FormatoFinal.class
 com\mycompany\proyectopoo\InvalidNotaInitializationException.class
 com\mycompany\proyectopoo\VentanaMenu.class
+com\mycompany\proyectopoo\SchoolYearUnfinishedException.class
 com\mycompany\proyectopoo\FormatoFinalAprobado.class
 com\mycompany\proyectopoo\ManejoDeCursos.class
-com\mycompany\proyectopoo\FormatoEstadoFinal.class
+com\mycompany\proyectopoo\FormatoPreliminar.class
 com\mycompany\proyectopoo\FormatoPreliminarAprobado.class
 com\mycompany\proyectopoo\VentanaMostrar$2.class
 com\mycompany\proyectopoo\Curso.class
@@ -27,7 +28,6 @@ com\mycompany\proyectopoo\VentanaAgregar$2.class
 com\mycompany\proyectopoo\AlumnoAprobado.class
 com\mycompany\proyectopoo\FormatoEstadoAlumnos.class
 com\mycompany\proyectopoo\VentanaAgregar$1.class
-com\mycompany\proyectopoo\FormatoEstadoPreliminar.class
 com\mycompany\proyectopoo\ManejoDeCSV.class
 com\mycompany\proyectopoo\VentanaMenu$1.class
 com\mycompany\proyectopoo\VentanaMostrar$5.class

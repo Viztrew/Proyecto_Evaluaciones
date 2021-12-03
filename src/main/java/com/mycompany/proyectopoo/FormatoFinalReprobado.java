@@ -7,38 +7,48 @@ import java.util.ArrayList;
 public class FormatoFinalReprobado extends FormatoEstadoAlumnos{
     
     public void mostrarEstadoAlumnos(ArrayList<Curso> listaCursos) {
-        int cant;
-        for (int i = 0 ; i < listaCursos.size() ; i++ )
+        try
         {
-            cant=0;
-            ArrayList <AlumnoMatricula> estados =  listaCursos.get(i).getEstadoCurso();
-            
-            System.out.println("Alumnos de " +listaCursos.get(i).getNombreCurso()+": ");
-            if (estados.isEmpty()){
-                System.out.println("El curso " + listaCursos.get(i).getNombreCurso() + " no tiene alumnos registrados.");
-            }else
+            int cant;
+            for (int i = 0 ; i < listaCursos.size() ; i++ )
             {
-                for (int j = 0 ; j < estados.size() ; j++)
+                cant=0;
+                ArrayList <AlumnoMatricula> estados =  listaCursos.get(i).getEstadoCurso();
+                ArrayList <String> alumnos = listaCursos.get(i).getListaRuts();
+                if (estados.isEmpty()&& !alumnos.isEmpty())
                 {
-                    if (estados.get(j) instanceof AlumnoReprobado)
+                    throw new SchoolYearUnfinishedException();
+                }else
+                {
+                    System.out.println("Alumnos de " +listaCursos.get(i).getNombreCurso()+": ");
+                    if (alumnos.isEmpty()){
+                    System.out.println("El curso " + listaCursos.get(i).getNombreCurso() + " no tiene alumnos registrados.");
+                    }  
+                    for (int j = 0 ; j < estados.size() ; j++)
                     {
-                        AlumnoReprobado estadoAlumno = (AlumnoReprobado)estados.get(j);
-                        if(estadoAlumno.getRendirEvaluacionFinal())
+                        if (estados.get(j) instanceof AlumnoReprobado)
                         {
-                            System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: REPROBADO CON DERECHO A EXAMEN");
-                        }else
-                        {
-                            System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: REPROBADO SIN DERECHO A EXAMEN");
+                            AlumnoReprobado estadoAlumno = (AlumnoReprobado)estados.get(j);
+                            if(estadoAlumno.getRendirEvaluacionFinal())
+                            {
+                                System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: REPROBADO CON DERECHO A EXAMEN");
+                            }else
+                            {
+                                System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: REPROBADO SIN DERECHO A EXAMEN");
+                            }
+                            cant++;
                         }
-                        cant++;
                     }
+                    if(cant==0 && !alumnos.isEmpty())
+                    {
+                        System.out.println("Curso sin alumnos Reprobados");
+                    }  
                 }
-                if(cant==0)
-                {
-                    System.out.println("Curso sin alumnos Aprobados");
-                }  
             }
+            System.out.print("\n");
+        }catch(SchoolYearUnfinishedException e)
+        {
+            e.printStackTrace();
         }
-        System.out.print("\n");
-    }
+    }   
 }

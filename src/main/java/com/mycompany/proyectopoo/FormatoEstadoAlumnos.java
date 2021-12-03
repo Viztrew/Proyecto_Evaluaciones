@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import org.apache.commons.math3.util.Precision;
 
 //Clase "Padre" de las que forman el patrón Strategy
-public abstract class FormatoEstadoAlumnos {
+public abstract class FormatoEstadoAlumnos
+{
     
     public abstract void mostrarEstadoAlumnos(ArrayList<Curso> listaCursos);
     
