@@ -1,8 +1,9 @@
 package com.mycompany.proyectopoo;
-import java.io.*;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import org.apache.commons.math3.util.Precision;
 
 public class Unidad {
     
@@ -12,23 +13,17 @@ public class Unidad {
     private String fechaEvaluacion;
     private ArrayList<String> listaRutAlumnos;
     private HashMap<String,Double> mapaNotasUnidad;
-    BufferedReader lector = new BufferedReader(new InputStreamReader (System.in));
    
     //Constructor
     public Unidad(String nombreUnidad,ArrayList<String> listaRutAlumnos) {
-        this.nombreUnidad = nombreUnidad;
+        setNombreUnidad(nombreUnidad);
         this.preguntasUnidad = new ArrayList<>();
         this.listaRutAlumnos = new ArrayList<>();
         this.listaRutAlumnos.addAll(listaRutAlumnos);
         Calendar c = Calendar.getInstance();
         this.fechaEvaluacion = Integer.toString(c.get(Calendar.DATE))+"/"+Integer.toString(c.get(Calendar.MONTH))+"/"+ Integer.toString(c.get(Calendar.YEAR));
-        
-        
-        this.mapaNotasUnidad = new HashMap<>();/*
-        for(int i = 0 ; i < this.listaRutAlumnos.size() ; i++)
-        {
-            this.mapaNotasUnidad.put(this.listaRutAlumnos.get(i), 0.0);
-        }*/
+      
+        this.mapaNotasUnidad = new HashMap<>();
     }
     
     //Metodos
@@ -41,8 +36,13 @@ public class Unidad {
     
     public void addAlumnoUnidad(String rutAlumno)
     {
-        setNota(0.0, rutAlumno, true);
-        this.listaRutAlumnos.add(rutAlumno);
+        try{
+            setNota(0.0, rutAlumno, true);
+            this.listaRutAlumnos.add(rutAlumno);
+        }catch(InvalidNotaInitializationException e){
+            e.printStackTrace();
+        }
+        
     }
     public boolean deleteAlumno(String rutAlumno)
     {
@@ -97,7 +97,7 @@ public class Unidad {
         
     }
 
-    public void setNombreUnidad(String nombreUnidad) {
+    private void setNombreUnidad(String nombreUnidad) {
         this.nombreUnidad = nombreUnidad;
     }
 
@@ -110,13 +110,14 @@ public class Unidad {
     }
     
     // si la nota a ingresar es para inicializar la unidad, se admite el valor 0.0 que es el valor de una nota sin valor
-    public void setNota(double nota, String rutAlumno, boolean inicializacion)
+    public void setNota(double nota, String rutAlumno, boolean inicializacion) throws InvalidNotaInitializationException
     {
-        if ((nota >= 1.0 && nota <= 7.0)||(inicializacion)){
-            this.mapaNotasUnidad.put(rutAlumno, nota);
+        if ((nota >= 1.0 && nota <= 7.0)||(inicializacion && nota==0.0)){
+            this.mapaNotasUnidad.put(rutAlumno, Precision.round(nota,1,1));
         }else
         {
-            //error de parametro no válido
+            throw new InvalidNotaInitializationException();
         }
+        
     }
 }

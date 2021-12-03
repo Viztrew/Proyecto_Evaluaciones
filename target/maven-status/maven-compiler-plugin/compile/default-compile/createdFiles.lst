@@ -1,3 +1,4 @@
+com\mycompany\proyectopoo\AlumnoReprobado.class
 com\mycompany\proyectopoo\ControladorVentanaMostrar.class
 com\mycompany\proyectopoo\ControladorVentanaMenu.class
 com\mycompany\proyectopoo\EstadoMatricula.class
@@ -11,19 +12,18 @@ com\mycompany\proyectopoo\VentanaMenu$3.class
 com\mycompany\proyectopoo\VentanaMostrar$4.class
 com\mycompany\proyectopoo\VentanaAgregar$3.class
 com\mycompany\proyectopoo\VentanaMostrar$1.class
-com\mycompany\proyectopoo\Aprobado.class
+com\mycompany\proyectopoo\InvalidNotaInitializationException.class
 com\mycompany\proyectopoo\VentanaMenu.class
 com\mycompany\proyectopoo\ManejoDeCursos.class
 com\mycompany\proyectopoo\VentanaMostrar$2.class
 com\mycompany\proyectopoo\Curso.class
-com\mycompany\proyectopoo\Reprobado.class
 com\mycompany\proyectopoo\VentanaAgregar$2.class
+com\mycompany\proyectopoo\AlumnoAprobado.class
 com\mycompany\proyectopoo\VentanaAgregar$1.class
 com\mycompany\proyectopoo\ManejoDeCSV.class
 com\mycompany\proyectopoo\VentanaMenu$1.class
 com\mycompany\proyectopoo\VentanaMostrar$5.class
 com\mycompany\proyectopoo\AlumnoMatricula.class
 com\mycompany\proyectopoo\Proyecto.class
-com\mycompany\proyectopoo\VentanaMenu$4.class
 com\mycompany\proyectopoo\Asignatura.class
 com\mycompany\proyectopoo\VentanaAgregar$4.class

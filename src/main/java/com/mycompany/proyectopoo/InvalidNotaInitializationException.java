@@ -5,8 +5,14 @@
  */
 package com.mycompany.proyectopoo;
 
-
-public interface EstadoMatricula {
-    public void reportarEstado(double promedio);
-    public void actualizarEstado(int estado);
+/**
+ *
+ * @author vxo-k
+ */
+public class InvalidNotaInitializationException extends Exception {
+    public InvalidNotaInitializationException()
+    {
+        super("The 'Nota' inicialitation is invalid ");
+    }
+    
 }

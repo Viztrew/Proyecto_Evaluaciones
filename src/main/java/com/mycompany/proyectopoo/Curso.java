@@ -9,7 +9,7 @@ public class Curso {
     
     //Constructor
     public Curso(String nombreCurso) {
-        this.nombreCurso = nombreCurso;
+        setNombreCurso(nombreCurso);
         
         this.listaRutAlumnos = new ArrayList<>();
         
@@ -20,7 +20,7 @@ public class Curso {
     } 
     
     public Curso(String nombreCurso,ArrayList<String>listaRutAlumnos) {
-        this.nombreCurso = nombreCurso;
+        setNombreCurso(nombreCurso);
         
         this.listaRutAlumnos = new ArrayList<>();
         
@@ -32,7 +32,7 @@ public class Curso {
     } 
     
     public Curso(String nombreCurso, String [] asignaturasCurso , String [] unidadesAsigUnidos) {
-        this.nombreCurso = nombreCurso;
+        setNombreCurso(nombreCurso);
         
         this.listaRutAlumnos = new ArrayList<>();
         
@@ -46,7 +46,7 @@ public class Curso {
     } 
     
     public Curso(String nombreCurso, ArrayList<String>listaRutAlumnos, String [] asignaturasCurso , String [] unidadesAsigUnidos) {
-        this.nombreCurso = nombreCurso;
+        setNombreCurso(nombreCurso);
         
         this.listaRutAlumnos = new ArrayList<>();
         
@@ -77,7 +77,7 @@ public class Curso {
             }
         }
     }
-    public void addAlumno(String rutAlumno)
+    public void addAlumno(String rutAlumno) throws InvalidNotaInitializationException
     {
         this.listaRutAlumnos.add(rutAlumno);
         for(int i = 0; i < this.listaAsignaturas.size(); i++ )
@@ -94,7 +94,7 @@ public class Curso {
                 this.listaAsignaturas.get(i).addPreguntaUnidad(nombreUnidad,pregunta);
         }
     }
-    public void addNotaAlumno(String nombreAsig, String nombreUnidad, String rutAlumno, double notaAGuardar, boolean inicializacion)
+    public void addNotaAlumno(String nombreAsig, String nombreUnidad, String rutAlumno, double notaAGuardar, boolean inicializacion) throws InvalidNotaInitializationException
     {
         for(int i = 0; i < this.listaAsignaturas.size(); i++ )
         {
@@ -116,21 +116,21 @@ public class Curso {
     }
     public ArrayList<String> getListaRuts ()
     {
-        ArrayList <String> listaRuts = new ArrayList <String>();
+        ArrayList <String> listaRuts = new ArrayList <>();
         for (int i = 0 ; i < this.listaRutAlumnos.size() ; i++)
             listaRuts.add(this.listaRutAlumnos.get(i));
         return listaRuts;
     }
     public ArrayList<String> getListaNombresAsig ()
     {
-        ArrayList <String> listaNombresAsig = new ArrayList <String>();
+        ArrayList <String> listaNombresAsig = new ArrayList <>();
         for (int i = 0 ; i < this.listaAsignaturas.size() ; i++)
             listaNombresAsig.add(this.listaAsignaturas.get(i).getNombreAsignatura());
         return listaNombresAsig;
     }
     public ArrayList<String> getListaNombresUnidades(String nombreAsignatura)
     {
-        ArrayList <String> listaNombresUnidades = new ArrayList <String>();
+        ArrayList <String> listaNombresUnidades = new ArrayList <>();
         for (int i = 0 ; i < this.listaAsignaturas.size() ; i++){
             if (nombreAsignatura.equals(this.listaAsignaturas.get(i).getNombreAsignatura()))
                 listaNombresUnidades = this.listaAsignaturas.get(i).getNombreUnidades();
@@ -139,7 +139,8 @@ public class Curso {
     }
     
     public ArrayList<String> getListaPreguntasAsig(String nombreAsig, String nombreUnidad) {
-        ArrayList <String> listaPreguntasUnidades = new ArrayList <String>();
+        ArrayList <String> listaPreguntasUnidades;
+        listaPreguntasUnidades = new ArrayList <>();
         for(int j = 0; j < this.listaAsignaturas.size(); j++ )
         {
             if((this.listaAsignaturas.get(j).getNombreAsignatura()).toLowerCase().equals(nombreAsig.toLowerCase()))
@@ -231,9 +232,7 @@ public class Curso {
         return nombreCurso;
     }
 
-    public void setNombreCurso(String nombreCurso) {
+    private void setNombreCurso(String nombreCurso) {
         this.nombreCurso = nombreCurso;
     }
-
-    
 }

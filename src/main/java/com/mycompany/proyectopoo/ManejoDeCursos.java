@@ -5,23 +5,25 @@ import java.util.ArrayList;
 import java.io.IOException;
 import static com.mycompany.proyectopoo.ManejoDeCSV.*;
 import org.apache.commons.math3.util.Precision;//se utiliza la dependencia org.apache.commons de matematicas para aproximar los numeros decimales con Precision.round
-public class ManejoDeCursos {
+public class ManejoDeCursos implements EstadoMatricula{
          //Se crea un arrayList para guardar los cursos que se leeran del csv en la funcion leerParametroCSV
     private ArrayList<String> listaCursos;
     private ArrayList<Curso> cursos;
 
+    // constructor, lee los nombres de los cursos mediante el csv "Cursos.csv"
     ManejoDeCursos(){
         this.listaCursos = leerParametroCSV("Curso","Cursos.csv");
         this.cursos = new ArrayList<>();
     }
         
         //se crean los objetos cursos segun los datos guardados en el csv  
-    public void crearCursos()throws IOException  {
+    public void crearCursos()throws IOException, InvalidNotaInitializationException  {
+        
         for (int i = 0; i < this.listaCursos.size(); i++ ){
             Curso curso = null;
             String nombreCurso = this.listaCursos.get(i);
             switch(tipoLlenado(nombreCurso)){
-                
+
                 case 1: //Solamente el nombre del curso esta guardado en el csv
                     curso = new Curso(nombreCurso);
                     break;
@@ -68,6 +70,7 @@ public class ManejoDeCursos {
         return caso;
     }
     
+    // método que lee un banco de preguntas desde "BancoPreguntas.csv" de un curso específico y lo guarda en ram mediante el método addPreguntaUnidad
     private void leerBancoDePreguntasCSV(Curso curso) {
         ArrayList<String> listaPreguntas = leerParametroCursoCSV(curso.getNombreCurso(),"Asignatura,Unidad,Pregunta","BancoPreguntas.csv",false);
         ArrayList<String> listaAsig = curso.getListaNombresAsig();
@@ -90,7 +93,8 @@ public class ManejoDeCursos {
         }
     }
     
-    private void leerNotasCSV (Curso curso)
+    // método que lee desde el CSV "Notas.csv", las notas respectivas de cada alumno y las guarda en ram mediante el método addNotaAlumno
+    private void leerNotasCSV (Curso curso) throws InvalidNotaInitializationException
     {
         ArrayList<String> listaRuts = leerParametroCursoCSV(curso.getNombreCurso(),"Rut","Notas.csv",false);
         ArrayList<String> listaNotas = leerParametroCursoCSV(curso.getNombreCurso(),"Nota","Notas.csv",true);
@@ -114,7 +118,7 @@ public class ManejoDeCursos {
             }
         }
     }
-        //se muestra la informacion de los cursos
+    // Método que muestra por consola los nombres de todos los cursos guardados en el sistema
     public void mostrarNombreCursos()
     {
         for (int i = 0; i < this.cursos.size(); i++ ){
@@ -122,7 +126,48 @@ public class ManejoDeCursos {
         }
     }
     
-    public void mostrarNombresAsig(String nombreCurso)
+    // método que muestra por consola todos los ruts de los alumnos guardados en el sistema agrupados por sus cursos respectivos
+    public void mostrarTodosAlumnos() {
+        for (int i = 0; i < this.cursos.size(); i++ )
+        {
+            System.out.println("Alumnos de " + cursos.get(i).getNombreCurso()+ ": ");
+            ArrayList<String> rutsAlumnos = cursos.get(i).getListaRuts();
+            if (rutsAlumnos.isEmpty())
+            {
+                System.out.println("El curso " + this.cursos.get(i).getNombreCurso() + " no tiene alumnos registrados.");
+            }else
+            {
+                for(int j=0 ; j<rutsAlumnos.size(); j++)
+                    System.out.println("Alumno " + (j+1) + ": " + rutsAlumnos.get(j));
+            }
+            System.out.print("\n");
+        }
+    }
+    
+    //método que muestra por consola los ruts de alumnos de un curso guardado en el sistema
+    public void mostrarAlumnosCurso(String nombreCurso)
+    {
+        for (int i = 0; i < this.cursos.size() ; i++ )
+        {
+            if ((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
+            {
+                System.out.println("Alumnos de " + cursos.get(i).getNombreCurso()+ ": ");
+                ArrayList<String> rutsAlumnos = cursos.get(i).getListaRuts();
+                if (rutsAlumnos.isEmpty())
+                {
+                    System.out.println("El curso " + this.cursos.get(i).getNombreCurso() + " no tiene Alumnos registrados.");
+                }else
+                {
+                    for(int j=0 ; j<rutsAlumnos.size(); j++)
+                        System.out.println("Alumno " + (j+1) + ": " + rutsAlumnos.get(j));
+                    return;
+                }
+            }
+        }
+    }
+    
+    //método que muestra por consola los nombres de las asignaturas de un curso específico
+    public void mostrarAsignaturas(String nombreCurso)
     {
         for (int i = 0; i < this.cursos.size(); i++ ){
             if ((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
@@ -140,9 +185,9 @@ public class ManejoDeCursos {
         }
     }
     
-    public void mostrarNombresUnidades(String nombreCurso,String nombreAsig)
+    // método que muestra por consola las Unidades de una asignatura y curso específico
+    public void mostrarUnidades(String nombreCurso,String nombreAsig)
     {
-        
         for (int i = 0; i < this.cursos.size(); i++ )
         {
             if ((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
@@ -164,186 +209,7 @@ public class ManejoDeCursos {
             }
         }
     }
-    
-    public void mostrarTodosAlumnos() {
-        for (int i = 0; i < this.cursos.size(); i++ )
-        {
-            System.out.println("Alumnos de " + cursos.get(i).getNombreCurso()+ ": ");
-            ArrayList<String> rutsAlumnos = cursos.get(i).getListaRuts();
-            if (rutsAlumnos.isEmpty())
-            {
-                System.out.println("El curso " + this.cursos.get(i).getNombreCurso() + " no tiene alumnos registrados.");
-            }else
-            {
-                for(int j=0 ; j<rutsAlumnos.size(); j++)
-                    System.out.println("Alumno " + (j+1) + ": " + rutsAlumnos.get(j));
-            }
-            System.out.print("\n");
-        }
-    }
-    public void matriculaFinal() {
-        for (int i = 0; i < this.cursos.size(); i++ )
-        {
-            ArrayList<String> nombresCursos = getNombreCursos();
-            ArrayList<String> rutsAlumnos = cursos.get(i).getListaRuts();
-            if (rutsAlumnos.isEmpty()!=true)
-            {
-                // Se calcula el promedio final del alumno y se llama al constructor correspondiente dado los siguientes parametros y se guardan en una arraylist de Curso
-                // Aprueba con beca: promedio >= 6.5
-                // Aprueba sin beca: promedio >= 4
-                // Reprueban (sin derecho a examen): promedio < 3
-                // Reprueban (con derecho a examen): 4 > promedio >= 3
-                for(int j=0 ; j<rutsAlumnos.size(); j++){  
-                    
-                    // los aprobados que tengan promedio >=6.5 ya tienen su beca asegurada y no tienen derecho a rendir la ultima prueba (true(beca),false(prueba))
-                    if((getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j))) >= 4){
-                        if((getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j))) >= 6.5){
-                            Aprobado a = new Aprobado(rutsAlumnos.get(j),getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j)),true,false);
-                            cursos.get(i).addEstadoAlumno(a);
-                        }
-                        else{
-                            // los aprobados que no tengan su beca, podrán rendir la prueba, si su nota es mayora a 6.5 obtienen beca  (false(beca),true(prueba))
-                            Aprobado a = new Aprobado(rutsAlumnos.get(j),getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j)),false,true);
-                            cursos.get(i).addEstadoAlumno(a);
-                        }
-                    }
-                    // los repitentes que tengan un promedio >= 3 tienen tienen una posibildiad de dar un examen, si su nota cumple con los parametros, su situacionAcademica cambia a true(pasa de curso)
-                    // (false(repiten), true(examen)
-                    if((getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j))) < 4){
-                        if((getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j))) >= 3){
-                            Reprobado a = new Reprobado(rutsAlumnos.get(j),getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j)), false,true);
-                            cursos.get(i).addEstadoAlumno(a);
-                        }
-                        else{
-                            // si el alumno no tiene notas (no se puede sacar su promedio), se le asigna promedio 1.0 y no tiene derecho a examen por tanto repite curso (false,false)
-                            if (getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j))==0.0)
-                            {
-                                Reprobado a = new Reprobado(rutsAlumnos.get(j),1.0,false,false);
-                                cursos.get(i).addEstadoAlumno(a);
-                            }else
-                            {
-                                Reprobado a = new Reprobado(rutsAlumnos.get(j),getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j)),false,false);
-                                cursos.get(i).addEstadoAlumno(a);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }    
-    
-    // Metodo que muestra en pantalla los estado de los alumnos ya sean aprobado o reprobados
-    // si reprobados es true, mostrara reprobados, si no, los omite.
-    // si aprobados es true, mostrará aprobados, si no, los omite
-    public void mostrarEstadoAlumnos (boolean reprobados, boolean aprobados)
-    {
-        for (int i = 0; i < this.cursos.size(); i++ )
-        {
-            ArrayList <AlumnoMatricula> estados =  this.cursos.get(i).getEstadoCurso();
-            if (aprobados && reprobados)
-            {
-                System.out.println("Alumnos de " +this.cursos.get(i).getNombreCurso()+": ");
-                if (estados.isEmpty()){
-                    System.out.println("El curso " + this.cursos.get(i).getNombreCurso() + " no tiene alumnos registrados.");
-                }  
-            }
-            for (int j =0 ; j < estados.size() ; j++)
-            {
-                if (estados.get(j) instanceof Aprobado && aprobados)
-                {
-                    Aprobado estadoAlumno = (Aprobado)estados.get(j);
-                    if (estadoAlumno.getBeca())
-                    {
-                        System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: APROBADO CON BECA");
-                    }else
-                    {
-                        System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: APROBADO SIN BECA");
-                    }
-                }else if (estados.get(j) instanceof Reprobado && reprobados)
-                {
-                    Reprobado estadoAlumno = (Reprobado)estados.get(j);
-                    if(estadoAlumno.getRendirEvaluacionFinal())
-                    {
-                        System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: REPROBADO CON DERECHO A EXAMEN");
-                    }else
-                    {
-                        System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: REPROBADO SIN DERECHO A EXAMEN");
-                    }
-                }
-            }
-            if (aprobados && reprobados)
-            {
-                
-                System.out.print("\n");
-            }
-        }
-        System.out.print("\n");
-    }
-    
-    // fncion que muestra los alumnos que pueden rendir la evaluacion final (RendirEvaluacionFinal == true)
-    public void mostrarAlumnosEvaluacionFinal()
-    {
-        for (int i = 0; i < this.cursos.size(); i++ )
-        {
-            ArrayList <AlumnoMatricula> estados =  this.cursos.get(i).getEstadoCurso();
-            for (int j =0 ; j < estados.size() ; j++)
-            {
-                if (estados.get(j) instanceof Aprobado)
-                {
-                    Aprobado estadoAlumno = (Aprobado)estados.get(j);
-                    if(estadoAlumno.getRendirEvaluacionFinal()){
-                        System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: APROBADO SIN BECA");
-                        System.out.print("\n");
-                    }
-                }else if (estados.get(j) instanceof Reprobado)
-                {
-                    Reprobado estadoAlumno = (Reprobado)estados.get(j);
-                    if(estadoAlumno.getRendirEvaluacionFinal())
-                    {
-                        System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: REPROBADO CON DERECHO A EXAMEN");
-                        System.out.print("\n");
-                    }
-                }
-            }
-            
-        }
-    }
-    /*
-    public int  AprobadoReprobado(String rutAlumno){
-
-             
-        for(int i = 0; i < listaAprobados.size(); i++){
-            if ((listaAprobados.get(i).getRutPersona()).toLowerCase().equals(rutAlumno.toLowerCase()))
-            {
-                if(listaAprobados.get(i).getBeca()==true){
-                    return 1;
-                }
-            }
-        }
-        return 0;
-    }*/
-
-    public void mostrarAlumnosCurso(String nombreCurso)
-    {
-        for (int i = 0; i < this.cursos.size() ; i++ )
-        {
-            if ((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
-            {
-                System.out.println("Alumnos de " + cursos.get(i).getNombreCurso()+ ": ");
-                ArrayList<String> rutsAlumnos = cursos.get(i).getListaRuts();
-                if (rutsAlumnos.isEmpty())
-                {
-                    System.out.println("El curso " + this.cursos.get(i).getNombreCurso() + " no tiene Alumnos registrados.");
-                }else
-                {
-                    for(int j=0 ; j<rutsAlumnos.size(); j++)
-                        System.out.println("Alumno " + (j+1) + ": " + rutsAlumnos.get(j));
-                    return;
-                }
-            }
-        }
-    }
-            
+    //método que muestra por consola las unidades y asignaturas de todos los cursos en el sistema
     public void mostrarTodosAsigYUnidades()
     {
         for (int i = 0; i < this.cursos.size() ; i++ ){
@@ -372,16 +238,18 @@ public class ManejoDeCursos {
         }
     }
     
+    
+    /*------Método sin utilizar, fue reemplazado por una ventana----------
+    método que muestra las asignaturas y unidades de un curso específico*/
     public void mostrarAsigYUnidadesCurso(String nombreCurso)
     {
-        
         for (int i = 0; i < this.cursos.size() ; i++ )
         {
             if ((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
             {
                 System.out.println("Asignaturas y Unidades Curso "+ cursos.get(i).getNombreCurso()+":");
                 ArrayList <String> listaNombresAsig = cursos.get(i).getListaNombresAsig();
-               if (listaNombresAsig.isEmpty())
+                if (listaNombresAsig.isEmpty())
                 {
                     System.out.println("El Curso "+ this.cursos.get(i).getNombreCurso() + " no tiene Asignaturas registradas");
                 }else
@@ -403,7 +271,8 @@ public class ManejoDeCursos {
             }
         }
     }
-     
+    
+    // método que muesta por consola un banco de preguntas de una unidad de una asignatura de un curso en el sistema
     public void mostrarBancoPreguntasUnidad(String nombreCurso, String nombreAsig, String nombreUnidad) {
         for (int i = 0; i < this.cursos.size() ; i++ ){
             if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
@@ -418,13 +287,13 @@ public class ManejoDeCursos {
                     for (int j = 0 ; j<listaPreguntas.size();j++)
                     System.out.println("Pregunta "+(j+1)+": "+listaPreguntas.get(j));
                 }
-                
             }
         }
     }
     
+    // método que muestra por consola las notas de todos los alumnos de un curso en el sistema
     public void mostrarNotasAlumnos(String nombreCurso) {
-       for (int i = 0; i < this.cursos.size() ; i++ ){
+        for (int i = 0; i < this.cursos.size() ; i++ ){
             if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
             {
                 ArrayList<String> alumnos = this.cursos.get(i).getListaRuts();
@@ -433,20 +302,23 @@ public class ManejoDeCursos {
                     System.out.println("Notas alumno "+alumnos.get(j)+": ");
                     System.out.println(cursos.get(i).getNotas(alumnos.get(j)));
                 }
+                break;
             }
         }
     }
+    
+    // método que muestra por consola las notas de todos los alumnos de una unidad de una asignatura de un curso en el sistema
     public void mostrarAlumnosYNotasUnidad(String nombreCurso, String nombreAsig, String nombreUnidad)
     {
-        for (int i = 0 ; i< this.cursos.size() ; i++)
+        for (int i = 0 ; i < this.cursos.size() ; i++)
         {
             if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
             {
                 ArrayList<String> listaAlumnos = this.cursos.get(i).getListaRuts();
-                for (int j = 0 ; j < listaAlumnos.size(); j++)
+                for (int j = 0 ; j < listaAlumnos.size() ; j++)
                 {
-                    System.out.print("Alumno "+j+": "+ listaAlumnos.get(j)+" Nota de Unidad "+ nombreUnidad+": ");
-                    if (getNotaAlumno(nombreCurso, nombreAsig, nombreUnidad, listaAlumnos.get(j))==0.0)
+                    System.out.print("Alumno " + j + ": " + listaAlumnos.get(j) + " Nota de Unidad " + nombreUnidad + ": ");
+                    if (getNotaAlumno(nombreCurso, nombreAsig, nombreUnidad, listaAlumnos.get(j)) == 0.0)
                     {
                         System.out.println("s/n");
                     }
@@ -454,14 +326,160 @@ public class ManejoDeCursos {
                     {
                         System.out.println(getNotaAlumno(nombreCurso, nombreAsig, nombreUnidad, listaAlumnos.get(j)));
                     }
-                    
                 }
-                
+                break;
+            }
+        }
+    }
+    public void matriculaFinal() {
+        for (int i = 0; i < this.cursos.size(); i++ )
+        {
+            ArrayList<String> nombresCursos = getNombreCursos();
+            ArrayList<String> rutsAlumnos = cursos.get(i).getListaRuts();
+            if (rutsAlumnos.isEmpty()!=true)
+            {
+                // Se calcula el promedio final del alumno y se llama al constructor correspondiente dado los siguientes parametros y se guardan en una arraylist de Curso
+                // Aprueba con beca: promedio >= 6.5
+                // Aprueba sin beca: promedio >= 4
+                // Reprueban (sin derecho a examen): promedio < 3
+                // Reprueban (con derecho a examen): 4 > promedio >= 3
+                for(int j=0 ; j<rutsAlumnos.size(); j++){  
+                    
+                    // los aprobados que tengan promedio >=6.5 ya tienen su beca asegurada y no tienen derecho a rendir la ultima prueba (true(beca),false(prueba))
+                    if((getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j))) >= 4){
+                        if((getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j))) >= 6.5){
+                            AlumnoAprobado a = new AlumnoAprobado(rutsAlumnos.get(j),getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j)),true,false);
+                            cursos.get(i).addEstadoAlumno(a);
+                        }
+                        else{
+                            // los aprobados que no tengan su beca, podrán rendir la prueba, si su nota es mayora a 6.5 obtienen beca  (false(beca),true(prueba))
+                            AlumnoAprobado a = new AlumnoAprobado(rutsAlumnos.get(j),getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j)),false,true);
+                            cursos.get(i).addEstadoAlumno(a);
+                        }
+                    }
+                    // los repitentes que tengan un promedio >= 3 tienen tienen una posibildiad de dar un examen, si su nota cumple con los parametros, su situacionAcademica cambia a true(pasa de curso)
+                    // (false(repiten), true(examen)
+                    if((getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j))) < 4){
+                        if((getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j))) >= 3){
+                            AlumnoReprobado a = new AlumnoReprobado(rutsAlumnos.get(j),getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j)), false,true);
+                            cursos.get(i).addEstadoAlumno(a);
+                        }
+                        else{
+                            // si el alumno no tiene notas (no se puede sacar su promedio), se le asigna promedio 1.0 y no tiene derecho a examen por tanto repite curso (false,false)
+                            if (getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j))==0.0)
+                            {
+                                AlumnoReprobado a = new AlumnoReprobado(rutsAlumnos.get(j),1.0,false,false);
+                                cursos.get(i).addEstadoAlumno(a);
+                            }else
+                            {
+                                AlumnoReprobado a = new AlumnoReprobado(rutsAlumnos.get(j),getPromedioAlumno(nombresCursos.get(i), rutsAlumnos.get(j)),false,false);
+                                cursos.get(i).addEstadoAlumno(a);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }    
+    
+    // Metodo que muestra por consola los estado de los alumnos ya sean aprobado o reprobados
+    // si reprobados es true, mostrara reprobados, si no, los omite.
+    // si aprobados es true, mostrará aprobados, si no, los omite
+    public void mostrarEstadoAlumnos (boolean reprobados, boolean aprobados)
+    {
+        for (int i = 0 ; i < this.cursos.size() ; i++ )
+        {
+            ArrayList <AlumnoMatricula> estados =  this.cursos.get(i).getEstadoCurso();
+            if (aprobados && reprobados)
+            {
+                System.out.println("Alumnos de " +this.cursos.get(i).getNombreCurso()+": ");
+                if (estados.isEmpty()){
+                    System.out.println("El curso " + this.cursos.get(i).getNombreCurso() + " no tiene alumnos registrados.");
+                }  
+            }
+            for (int j = 0 ; j < estados.size() ; j++)
+            {
+                if (estados.get(j) instanceof AlumnoAprobado && aprobados)
+                {
+                    AlumnoAprobado estadoAlumno = (AlumnoAprobado)estados.get(j);
+                    if (estadoAlumno.getBeca())
+                    {
+                        System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: APROBADO CON BECA");
+                    }else
+                    {
+                        System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: APROBADO SIN BECA");
+                    }
+                }else if (estados.get(j) instanceof AlumnoReprobado && reprobados)
+                {
+                    AlumnoReprobado estadoAlumno = (AlumnoReprobado)estados.get(j);
+                    if(estadoAlumno.getRendirEvaluacionFinal())
+                    {
+                        System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: REPROBADO CON DERECHO A EXAMEN");
+                    }else
+                    {
+                        System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: REPROBADO SIN DERECHO A EXAMEN");
+                    }
+                }
+            }
+            if (aprobados && reprobados)
+            {
+                System.out.print("\n");
+            }
+        }
+        System.out.print("\n");
+    }
+    
+    // método que muestra los alumnos que pueden rendir la evaluacion final (RendirEvaluacionFinal == true)
+    public void mostrarAlumnosEvaluacionFinal()
+    {
+        for (int i = 0; i < this.cursos.size(); i++ )
+        {
+            ArrayList <AlumnoMatricula> estados =  this.cursos.get(i).getEstadoCurso();
+            for (int j =0 ; j < estados.size() ; j++)
+            {
+                if (estados.get(j) instanceof AlumnoAprobado)
+                {
+                    AlumnoAprobado estadoAlumno = (AlumnoAprobado)estados.get(j);
+                    if(estadoAlumno.getRendirEvaluacionFinal()){
+                        System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: APROBADO SIN BECA");
+                        System.out.print("\n");
+                    }
+                }else if (estados.get(j) instanceof AlumnoReprobado)
+                {
+                    AlumnoReprobado estadoAlumno = (AlumnoReprobado)estados.get(j);
+                    if(estadoAlumno.getRendirEvaluacionFinal())
+                    {
+                        System.out.println("Alumno: "+estadoAlumno.getRutPersona()+ " Promedio Final: " + estadoAlumno.getPromedioFinal()+" Estado: REPROBADO CON DERECHO A EXAMEN");
+                        System.out.print("\n");
+                    }
+                }
+            }
+        }
+    }
+    
+    // método que dependiendo del valor de aprobandoReprobando, muestra por consola los alumnos y sus promedios,
+    // si es true mostrará los que momentaneamente estrían aprobados y si es false, los reprobados
+    public void mostrarPromedioAlumnos(boolean aprobandoReprobando)
+    {
+        double promedio;
+        for (int i = 0 ; i < this.listaCursos.size() ; i++ )
+        {
+            ArrayList<String> alumnos = this.cursos.get(i).getListaRuts();
+            for (int j = 0 ; j < alumnos.size() ; j++ )
+            {
+                promedio = getPromedioAlumno(this.cursos.get(i).getNombreCurso(), alumnos.get(j));
+                if ((promedio>=4.0)&& (aprobandoReprobando))
+                {
+                    System.out.println("Alumno: " + alumnos.get(j) + " Promedio: " + promedio + " Aprobando" );
+                }else if ((promedio<4.0)&& (aprobandoReprobando!=true))
+                {
+                    System.out.println("Alumno: " + alumnos.get(j) + " Promedio : " + promedio + " Reprobando" );
+                }
             }
         }
     }
 
-    
+    //método que valida si un curso está guardado en el sistema, retorna true en caso positivo y false en caso negativo 
     public boolean validarCurso(String nombreCurso)
     {
         for (int i = 0; i < this.cursos.size() ; i++ ){
@@ -473,6 +491,7 @@ public class ManejoDeCursos {
         return false;
     }
     
+    // método que valida si una asignatura está guardada en un curso del sistema, retorna true en caso positivo y false en caso negativo 
     public boolean validarAsignatura(String nombreCurso,String nombreAsig)
     {
         for (int i = 0; i < this.cursos.size() ; i++ ){
@@ -490,6 +509,7 @@ public class ManejoDeCursos {
         return false;
     }
     
+    // método que valida si una unidad está guardada en una asignatura de un curso del sistema, retorna true en caso positivo y false en caso negativo 
     public boolean validarUnidad(String nombreCurso,String nombreAsig,String nombreUnidad)
     {
         for (int i = 0; i < this.cursos.size() ; i++ ){
@@ -514,6 +534,8 @@ public class ManejoDeCursos {
         System.out.print("\n");
         return false;
     }
+    
+    //método que valida si un alumno está guardado en algún curso del sistema, retorna true en caso positivo y false en caso negativo 
     public boolean validarAlumno(String rutAlumno)
     {
         for (int i = 0; i < this.cursos.size() ; i++ )
@@ -525,9 +547,10 @@ public class ManejoDeCursos {
                     return true;
             }
         }
-        
         return false;
     }
+    
+    // método que valida si una alumno pertenece a un curso, retorna true en caso positivo y false en caso negativo
     public boolean validarAlumnoEnCurso(String nombreCurso, String rutAlumno)
     {
         for (int i = 0; i < this.cursos.size() ; i++ )
@@ -544,6 +567,9 @@ public class ManejoDeCursos {
         }
         return false;
     }
+    
+    // metodo que válida si un alumno es apto para rendir la evaluacion final, retornando true en caso que pueda rendirla
+    // o false en caso contrario
     public boolean validarAlumnoEvaluacion(String rutAlumno)
     {
         String nombreCurso = buscarAlumno(rutAlumno);
@@ -556,9 +582,9 @@ public class ManejoDeCursos {
                 {
                     if (estados.get(j).getRutPersona().toLowerCase().equals(rutAlumno.toLowerCase()))
                     {
-                        if (estados.get(j) instanceof Aprobado)
+                        if (estados.get(j) instanceof AlumnoAprobado)
                         {
-                            Aprobado alumno = (Aprobado)estados.get(j);
+                            AlumnoAprobado alumno = (AlumnoAprobado)estados.get(j);
                             if (alumno.getBeca()!=true)
                             {
                                 return true;
@@ -566,9 +592,9 @@ public class ManejoDeCursos {
                             {
                                 return false;
                             }
-                        }else if (estados.get(j) instanceof Reprobado)
+                        }else if (estados.get(j) instanceof AlumnoReprobado)
                         {
-                            Reprobado alumno = (Reprobado)estados.get(j);
+                            AlumnoReprobado alumno = (AlumnoReprobado)estados.get(j);
                             if (alumno.getRendirEvaluacionFinal())
                             {
                                 return true;
@@ -583,9 +609,12 @@ public class ManejoDeCursos {
         }
         return false;
     }
+    
+    // método que verifica si un curso posee asignaturas guardadas, retornando false en caso de no tener asignaturas, 
+    // o true en caso de tenerlas
     public boolean verificarAsigDeCurso(String nombreCurso)
     {
-        for (int i = 0; i < this.cursos.size(); i++ ){
+        for (int i = 0 ; i < this.cursos.size() ; i++ ){
             if ((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
             {
                 ArrayList <String> listaNombresAsig = cursos.get(i).getListaNombresAsig();
@@ -599,7 +628,10 @@ public class ManejoDeCursos {
         }
         return false;
     }
-     public boolean verificarAlumnosDeCurso(String nombreCurso)
+    
+    // método que verifica si un curso posee alumnos guardados, retornando false en caso de no tener alumnos, 
+    // o true en caso de tenerlos
+    public boolean verificarAlumnosDeCurso(String nombreCurso)
     {
         for (int i = 0; i < this.cursos.size(); i++ ){
             if ((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
@@ -615,6 +647,9 @@ public class ManejoDeCursos {
         }
         return false;
     }
+     
+    // método que busca en todos los cursos un rut de un alumno, retorna el nombre del curso correspondiente en caso de encontrarlo,
+    // o de lo contrario, retorna null 
     public String buscarAlumno(String rutAlumno)
     {
         String curso = null;
@@ -630,15 +665,16 @@ public class ManejoDeCursos {
         return curso;
     }
     
-    
+    // método que agrega un curso al sistema, tanto al csv con el método guardarCursoEnCSV, como en ram
     public void addCurso(String nombreCurso)
     {
-        
         cursos.add(new Curso(nombreCurso));
         this.listaCursos.add(nombreCurso);
         guardarCursoEnCSV(nombreCurso);
     }
-    public void addAlumnoACurso(String nombreCurso, String rutAlumno)
+    
+    // método que agrega un alumno a un curso, tanto al csv con el método guardarAlumnoEnCSV, como en ram
+    public void addAlumnoACurso(String nombreCurso, String rutAlumno) throws InvalidNotaInitializationException
     {
         for (int i = 0; i < this.cursos.size() ; i++ ){
             if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
@@ -648,7 +684,9 @@ public class ManejoDeCursos {
             }
         }
     }
-    public void addAsignaturaACurso(String nombreCurso, String nombreAsig , String nombreUnidad) {
+    
+    // método que agrega una asignatura y una unidad a un curso, tanto al csv con el método guardarAsignaturaEnCSV, como en ram
+    public void addAsignaturaACurso(String nombreCurso, String nombreAsig , String nombreUnidad) throws InvalidNotaInitializationException {
         for (int i = 0; i < this.cursos.size() ; i++ ){
             if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
             {
@@ -663,12 +701,14 @@ public class ManejoDeCursos {
         }
         guardarAsignaturaEnCSV(nombreCurso,nombreAsig,nombreUnidad);
     }
-    public void addUnidadAAsignatura(String nombreCurso, String nombreAsig , String nombreUnidad) {
+    
+    // método que agraga una unidad a una asignatura de un curso, tanto al csv con el método guardarUnidadEnCSV, como en ram
+    public void addUnidadAAsignatura(String nombreCurso, String nombreAsig , String nombreUnidad) throws InvalidNotaInitializationException {
         for (int i = 0; i < this.cursos.size() ; i++ ){
             if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
             {
                 cursos.get(i).addUnidadAsignatura(nombreAsig,nombreUnidad);
-                ArrayList<String> alumnos = this.cursos.get(i).getListaRuts();
+                ArrayList<String> alumnos = cursos.get(i).getListaRuts();
                 for (int j = 0 ; j < alumnos.size(); j++)
                 {
                     addNotaAlumno(nombreCurso, nombreAsig, nombreUnidad, alumnos.get(j), 0.0, true);
@@ -677,26 +717,31 @@ public class ManejoDeCursos {
         }
         guardarUnidadEnCSV(nombreCurso,nombreAsig,nombreUnidad);
     }
+    
+    // método que agrega una pregunta al banco de preguntas de una unidad guardandola siempre en ram, pero dependiendo del valor de guardarEnCSV,
+    // se guardará o no en el csv. (Ya que este método se utiliza para inicializar el banco de preguntas al iniciar el programa y para guardar preguntas en este)
     public void addPreguntaUnidad(String nombreCurso, String nombreAsig, String nombreUnidad, String pregunta, boolean guardarEnCSV)
     {
-        for (int i = 0; i < this.cursos.size() ; i++ ){
+        for (int i = 0 ; i < this.cursos.size() ; i++ ){
             if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
                 cursos.get(i).addPreguntaAsig(nombreAsig, nombreUnidad, pregunta);
         }
         if (guardarEnCSV) 
             guardarPreguntaEnCSV(nombreCurso, nombreAsig, nombreUnidad, pregunta);
     }
-    public void addNotaAlumno(String nombreCurso,String nombreAsig, String nombreUnidad,String rutAlumno,double notaAGuardar,boolean inicializacion)
+    
+    // método que agrega una nota de una unidad a un alumno específico, el boolean es utilizado para que al iniciar el programa,
+    // la nota pueda tomar un valor 0.0 (sin nota)
+    public void addNotaAlumno(String nombreCurso,String nombreAsig, String nombreUnidad,String rutAlumno,double notaAGuardar,boolean inicializacion) throws InvalidNotaInitializationException
     {
-        for (int i = 0; i < this.cursos.size() ; i++ ){
+        for (int i = 0 ; i < this.cursos.size() ; i++ ){
             if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase())){
                 cursos.get(i).addNotaAlumno(nombreAsig, nombreUnidad, rutAlumno,notaAGuardar,inicializacion);
             }
         }
     }
     
-    //funcion que añade la nota final a la clase correspondiente (aprobado/repitente)
-    
+    //método que añade la nota final a la clase correspondiente (aprobado/repitente)
     public void addNotaEvaluacionFinal(String rutAlumno,double notaAlumno)
     {
         String nombreCurso = buscarAlumno(rutAlumno);
@@ -710,20 +755,20 @@ public class ManejoDeCursos {
                     if (estados.get(j).getRutPersona().toLowerCase().equals(rutAlumno.toLowerCase()))
                     {
                         // si la nota pertenece a un aprobado, y la nota es  6.5, solamente se reemplaza la variable beca, por true
-                        if (estados.get(j) instanceof Aprobado)
+                        if (estados.get(j) instanceof AlumnoAprobado)
                         {
-                            Aprobado alumno = (Aprobado)estados.get(j);
+                            AlumnoAprobado alumno = (AlumnoAprobado)estados.get(j);
                             alumno.evaluacionFinal(notaAlumno);
                             
                         }// En cambio si es un repitente, y la suma del 40% de su nota final mas el 60% de su promedio final es mayor a 4.5, pertenecerá a la clase Aprobado ("situacionAcademica" = true).
                         // todos sus datos se guardaran en alumnoAprobado y guardada en la listaEstadoAlumno de Curso
-                        else if (estados.get(j) instanceof Reprobado)
+                        else if (estados.get(j) instanceof AlumnoReprobado)
                         {
-                            Reprobado alumno = (Reprobado)estados.get(j);
+                            AlumnoReprobado alumno = (AlumnoReprobado)estados.get(j);
                             alumno.evaluacionFinal(notaAlumno);
                             if (alumno.getSituacionAcademica())
                             {
-                                Aprobado alumnoAprobado = new Aprobado(alumno.getRutPersona(),alumno.getPromedioFinal(),false,false);
+                                AlumnoAprobado alumnoAprobado = new AlumnoAprobado(alumno.getRutPersona(),alumno.getPromedioFinal(),false,false);
                                 this.cursos.get(i).replaceAlumnoMatricula(alumno,alumnoAprobado);
                             }
                         }    
@@ -732,6 +777,8 @@ public class ManejoDeCursos {
             }
         }
     }
+    
+    //método para obtener una lista con los nombres de los cursos
     public ArrayList<String> getNombreCursos()
     {
         ArrayList<String> nombreCursos = new ArrayList<>();
@@ -739,6 +786,8 @@ public class ManejoDeCursos {
             nombreCursos.add(this.listaCursos.get(i));
         return nombreCursos;
     }
+    
+    //método para obtener una lista con los ruts de los alumnos de un curso
     public ArrayList<String> getRutAlumnos(String curso)
     {
         ArrayList<String> rutAlumnos = new ArrayList<>();
@@ -752,6 +801,8 @@ public class ManejoDeCursos {
         }
         return rutAlumnos;
     }
+    
+    //método para obtener una lista con los nombres de las Asignaturas de un curso
     public ArrayList<String> getNombresAsignaturas(String curso)
     {
         ArrayList<String> listaAsignaturas = new ArrayList<>();
@@ -765,6 +816,8 @@ public class ManejoDeCursos {
         }
         return listaAsignaturas;
     }
+    
+    //método para obtener una lista con los nombres de las Unidades de una asignatura de un curso
     public ArrayList<String> getUnidadesAsignatura(String curso,String asig)
     {
         ArrayList<String> listaUnidades = new ArrayList<>();
@@ -778,6 +831,8 @@ public class ManejoDeCursos {
         }
         return listaUnidades;
     }
+    
+    // método para obtener una lista de double con las notas de un alumno de un curso
     public ArrayList<Double> getNotasAlumno (String nombreCurso, String rutAlumno)
     {
         ArrayList<Double> notasAlumno = new ArrayList<>();
@@ -791,6 +846,8 @@ public class ManejoDeCursos {
         }
         return notasAlumno;
     }
+    
+    // método para obtener una nota de una unidad de un alumno
     public double getNotaAlumno (String nombreCurso, String nombreAsig, String nombreUnidad, String rutAlumno)
     {
         double nota=0.0;
@@ -804,6 +861,8 @@ public class ManejoDeCursos {
         }
         return nota;
     }
+    
+    //método para obtener una lista con las preguntas de una Unidad 
     public ArrayList<String> getBancoPreguntas (String curso, String Asig, String Unidad)
     {
         ArrayList<String> preguntas = new ArrayList<>();
@@ -850,6 +909,8 @@ public class ManejoDeCursos {
         }
         return Precision.round(promedioNotas,1);
     }
+    
+    // método para obtener el promedio de un alumno de un curso
     public double getPromedioAlumno(String nombreCurso, String rutAlumno)
     {
         double notasAlumno=0.0;
@@ -866,6 +927,7 @@ public class ManejoDeCursos {
                     }
                 }
             }
+            // evitar división por 0
             if (cantNotas>0)
             {
                 return Precision.round(notasAlumno/cantNotas,1);
@@ -893,9 +955,9 @@ public class ManejoDeCursos {
                     if (estados.get(j).getRutPersona().toLowerCase().equals(rutAlumno.toLowerCase()))
                     {
                         
-                        if (estados.get(j) instanceof Aprobado)
+                        if (estados.get(j) instanceof AlumnoAprobado)
                         {
-                            Aprobado alumno = (Aprobado)estados.get(j);
+                            AlumnoAprobado alumno = (AlumnoAprobado)estados.get(j);
                             if (alumno.getBeca())
                             {
                                 return 1;
@@ -904,9 +966,9 @@ public class ManejoDeCursos {
                                 return 2;
                             }
                         }
-                        else if (estados.get(j) instanceof Reprobado)
+                        else if (estados.get(j) instanceof AlumnoReprobado)
                         {
-                            Reprobado alumno = (Reprobado)estados.get(j);
+                            AlumnoReprobado alumno = (AlumnoReprobado)estados.get(j);
                             if (alumno.getRendirEvaluacionFinal()){
                                 return 3;
                             }else{
@@ -921,6 +983,8 @@ public class ManejoDeCursos {
         return 0;
     }
     
+    // método para eliminar un alumno del csv mediante el método deleteAlumnoCSV y de ram, retorna true en caso de éxito, 
+    // o en caso contrario, false
     public boolean deleteAlumno (String rutAlumno)
     {
         String cursoAlumno = buscarAlumno(rutAlumno);
@@ -936,6 +1000,9 @@ public class ManejoDeCursos {
         }
         return false;
     }
+    
+    // método para reemplazar un rut de un alumno del csv mediante el método deleteAlumnoCSV y de ram, retorna true en caso de éxito, 
+    // o en caso contrario, false
     public boolean replaceAlumno(String rutOriginal, String rutNuevo)
     {
         String cursoAlumno = buscarAlumno(rutOriginal);
@@ -951,6 +1018,44 @@ public class ManejoDeCursos {
         }
         return false;
     }
-    
+    // implementacion de método contradados por la interfaz EstadoMatricula
+    public void reportarEstado(double promedio){
+        String estado;
+        if(promedio >= 4.0){
+            estado = "Aprobado";
+        }
+        else{
+            if(promedio == 0.0){
+            estado = "Desconocido";
+            }
+            else{
+                estado = "Reprobado";
+            }
+        }
+        System.out.println(estado);
+    }
+    // implementacion de método contradados por la interfaz EstadoMatricula
+    public void actualizarEstado(int estado)
+    {
+        switch(estado)
+        {
+            case 0:
+                System.out.println("Desconocido");
+                break;
+            case 1:
+                System.out.println("Aprobado"+" CON BECA");
+                break;
+            case 2:
+                System.out.println("Aprobado"+" SIN BECA");
+                break;
+            case 3:
+                System.out.println("Reprobado");
+                break;
+            case 4:
+                System.out.println("Reprobado");
+                break;
+        }
+        System.out.println("\n");
+    }
     
 }

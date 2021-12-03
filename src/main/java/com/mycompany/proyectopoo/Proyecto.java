@@ -17,9 +17,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-public abstract class Proyecto implements EstadoMatricula{
+public class Proyecto{
     
-    public static void main(String [] arg) throws IOException, InterruptedException
+    public static void main(String [] arg) throws IOException, InterruptedException, InvalidNotaInitializationException
     {
         Scanner lector = new Scanner(System.in);
         int opcion;
@@ -38,13 +38,13 @@ public abstract class Proyecto implements EstadoMatricula{
         VentanaMostrar ventanaMostrar;
         VentanaAgregar ventanaAgregar;
         c.crearCursos();
-        
+       // c.addNotaAlumno("Primero", "Matematicas", "NumerosNaturales", "12123412-0", 8.0, true); // ejemplo de excepcion de nota invalida (InvalidNotaInitializationException)
         do{
             
             // Menu
             System.out.println("---MENÚ PRINCIPAL---");
-            System.out.println("[1] Impresión de datos");
-            System.out.println("[2] Agregar/Llenar datos");
+            System.out.println("[1] Impresión de datos (2 Opciones con Ventana)");
+            System.out.println("[2] Agregar/Llenar datos(1 Opción con Ventana)");
             System.out.println("[3] Eliminar datos");
             System.out.println("[4] Modificar datos");
             System.out.println("[5] Finalizar año Escolar");
@@ -68,12 +68,13 @@ public abstract class Proyecto implements EstadoMatricula{
                         System.out.println("Opción: IMPRESIÓN DE DATOS");
                         System.out.println("[1] Mostrar cursos");
                         System.out.println("[2] Mostrar Alumnos de TODOS los cursos");
-                        System.out.println("[3] Mostrar Alumnos de curso específico");
+                        System.out.println("[3] Mostrar Alumnos de curso específico (VENTANA)");
                         System.out.println("[4] Mostrar Asignaturas y Unidades de TODOS los cursos");
-                        System.out.println("[5] Mostrar Asignaturas y Unidades de curso específico");
+                        System.out.println("[5] Mostrar Asignaturas y Unidades de curso específico (VENTANA)");
                         System.out.println("[6] Mostrar Notas de alumnos de un curso");
                         System.out.println("[7] Mostrar Promedio de Notas de una Unidad");
                         System.out.println("[8] Mostrar Promedio de Notas de un Alumno");
+                        System.out.println("[9] Mostrar Estado Preliminar de Alumnos (Aprobando/Reprobando)");
                         System.out.println("[0] Atrás"); 
                         System.out.println("Ingrese opción: ");
                         opcion2 = lector.nextInt();         
@@ -165,7 +166,7 @@ public abstract class Proyecto implements EstadoMatricula{
                                     do
                                     {
                                         System.out.println("Asginaturas del Curso "+ nombreCurso+":");
-                                        c.mostrarNombresAsig(nombreCurso);
+                                        c.mostrarAsignaturas(nombreCurso);
                                         System.out.print("\n");
                                         System.out.println("Ingrese Asginatura de la Unidad:");
                                         nombreAsig = lector.nextLine();
@@ -174,7 +175,7 @@ public abstract class Proyecto implements EstadoMatricula{
                                     do
                                     {
                                         System.out.println("Unidades en la Asignatura "+ nombreAsig +":");
-                                        c.mostrarNombresUnidades(nombreCurso,nombreAsig);
+                                        c.mostrarUnidades(nombreCurso,nombreAsig);
                                         System.out.print("\n");
                                         System.out.println("Ingrese Unidad " + nombreAsig + " (SIN ESPACIOS, ej: RevolucionIndustrial) :");
                                         nombreUnidad = lector.nextLine();
@@ -197,7 +198,7 @@ public abstract class Proyecto implements EstadoMatricula{
                             case 8:
                                 do
                                 {
-                                    System.out.println("Opcion: IMPRESION DE PROMEDIO DE NOTAS DE UN ALUMNO");
+                                    System.out.println("Opción: IMPRESION DE PROMEDIO DE NOTAS DE UN ALUMNO");
                                     System.out.println("Alumnos en el sistema: ");
                                     c.mostrarTodosAlumnos();
                                     System.out.print("\n");
@@ -217,14 +218,40 @@ public abstract class Proyecto implements EstadoMatricula{
                                 }else{
                                     System.out.println("El promedio de notas del Alumno '"+rutAlumno+"'"+" es "+promedio);
                                 }
-                                reportarEstado(promedio);
+                                c.reportarEstado(promedio);
                                 break;
-                                
+                            case 9:
+                                    do{
+                                        // subMenu
+                                        System.out.print("\n");
+                                        System.out.println("Opción: IMPRESIÓN ESTADO PRELIMINAR DE ALUMNOS (APROBANO/REPROBANDO)");
+                                        System.out.println("[1] Mostrar Alumnos Aprobando");
+                                        System.out.println("[2] Mostrar Alumnos Reprobando");
+                                        System.out.println("[0] Atras"); 
+                                        System.out.println("Ingrese opción: ");
+                                        opcion2 = lector.nextInt();         
+                                        lector.nextLine();
+                                        System.out.print("\n");
+                                        switch (opcion2){
+                                            case 0: 
+                                                atras = false;
+                                                break;
+                                            case 1:
+                                                System.out.println("Opción: MOSTRAR SOLO ALUMNOS APROBADOS");
+                                                c.mostrarPromedioAlumnos(true);
+                                                break;
+                                            case 2:
+                                                System.out.println("Opción: MOSTRAR SOLO ALUMNOS REPROBADOS");
+                                                c.mostrarPromedioAlumnos(false);
+                                                break;
+                                            default:
+                                                System.out.println("Ingrese opción válida");
+                                        }
+                                    }while(atras);
+                                break;
                             
-                                
                             default:
-                                System.out.println("Ingrese opción válida:");
-                                opcion2 = lector.nextInt();
+                                System.out.println("Ingrese opción válida");
                         }
                     }while(atras);
                     break;
@@ -234,7 +261,7 @@ public abstract class Proyecto implements EstadoMatricula{
                         // Menu
                         System.out.print("\n");
                         System.out.println("Opcion: AGREGAR/LLENAR DATOS");
-                        System.out.println("[1] Agregar Curso al sistema");
+                        System.out.println("[1] Agregar Curso al sistema (VENTANA)");
                         System.out.println("[2] Agregar Asignatura a Curso");
                         System.out.println("[3] Agregar Unidad a Asigantura");
                         System.out.println("[4] Agregar Alumno a Curso");
@@ -318,7 +345,7 @@ public abstract class Proyecto implements EstadoMatricula{
                                 do
                                 {
                                     System.out.println("Asignaturas en el Curso "+ nombreCurso +":");
-                                    c.mostrarNombresAsig(nombreCurso);
+                                    c.mostrarAsignaturas(nombreCurso);
                                     System.out.print("\n");
                                     System.out.println("Ingrese nombre de la Asignatura a añadir al curso " + nombreCurso + ":");
                                     datoAGuardar = lector.nextLine();
@@ -373,7 +400,7 @@ public abstract class Proyecto implements EstadoMatricula{
                                     do
                                     {
                                         System.out.println("Asginaturas del Curso "+ nombreCurso+":");
-                                        c.mostrarNombresAsig(nombreCurso);
+                                        c.mostrarAsignaturas(nombreCurso);
                                         System.out.print("\n");
                                         System.out.println("Ingrese Asginatura de la Unidad:");
                                         nombreAsig = lector.nextLine();
@@ -382,7 +409,7 @@ public abstract class Proyecto implements EstadoMatricula{
                                     do
                                     {
                                         System.out.println("Unidades en la Asignatura "+ nombreAsig +":");
-                                        c.mostrarNombresUnidades(nombreCurso,nombreAsig);
+                                        c.mostrarUnidades(nombreCurso,nombreAsig);
                                         System.out.print("\n");
                                         System.out.println("Ingrese Unidad a añadir a la Asignatura " + nombreAsig + " (SIN ESPACIOS, ej: RevolucionIndustrial) :");
                                         datoAGuardar = lector.nextLine();
@@ -464,7 +491,7 @@ public abstract class Proyecto implements EstadoMatricula{
                                     do
                                     {
                                         System.out.println("Asginaturas del Curso "+ nombreCurso+":");
-                                        c.mostrarNombresAsig(nombreCurso);
+                                        c.mostrarAsignaturas(nombreCurso);
                                         System.out.print("\n");
                                         System.out.println("Ingrese Asginatura de la Unidad:");
                                         nombreAsig = lector.nextLine();
@@ -473,7 +500,7 @@ public abstract class Proyecto implements EstadoMatricula{
                                     do
                                     {
                                         System.out.println("Unidades en la Asignatura "+ nombreAsig +":");
-                                        c.mostrarNombresUnidades(nombreCurso,nombreAsig);
+                                        c.mostrarUnidades(nombreCurso,nombreAsig);
                                         System.out.print("\n");
                                         System.out.println("Ingrese Unidad para añadir nota: ");
                                         nombreUnidad = lector.nextLine();
@@ -554,7 +581,7 @@ public abstract class Proyecto implements EstadoMatricula{
                                     do
                                     {
                                         System.out.println("Asginaturas del Curso "+ nombreCurso+":");
-                                        c.mostrarNombresAsig(nombreCurso);
+                                        c.mostrarAsignaturas(nombreCurso);
                                         System.out.print("\n");
                                         System.out.println("Ingrese Asginatura de la Unidad:");
                                         nombreAsig = lector.nextLine();
@@ -564,7 +591,7 @@ public abstract class Proyecto implements EstadoMatricula{
                                     do
                                     {
                                         System.out.println("Unidades de la Asignatura "+ nombreAsig +":");
-                                        c.mostrarNombresUnidades(nombreCurso,nombreAsig); 
+                                        c.mostrarUnidades(nombreCurso,nombreAsig); 
                                         System.out.print("\n");
                                         System.out.println("Ingrese Unidad de la Asignatura:");
                                         nombreUnidad = lector.nextLine();
@@ -617,8 +644,7 @@ public abstract class Proyecto implements EstadoMatricula{
                                 
                                 break;
                             default:
-                                System.out.println("Ingrese opción valida");
-                                opcion2 = lector.nextInt();
+                                System.out.println("Ingrese opción valida.");
                         }
                     }while(atras);
                     break;
@@ -688,7 +714,7 @@ public abstract class Proyecto implements EstadoMatricula{
                                     do
                                     {
                                         System.out.println("Asginaturas del Curso "+ nombreCurso+":");
-                                        c.mostrarNombresAsig(nombreCurso);
+                                        c.mostrarAsignaturas(nombreCurso);
                                         System.out.print("\n");
                                         System.out.println("Ingrese Asginatura de la Unidad:");
                                         nombreAsig = lector.nextLine();
@@ -697,7 +723,7 @@ public abstract class Proyecto implements EstadoMatricula{
                                     do
                                     {
                                         System.out.println("Unidades en la Asignatura "+ nombreAsig +":");
-                                        c.mostrarNombresUnidades(nombreCurso,nombreAsig);
+                                        c.mostrarUnidades(nombreCurso,nombreAsig);
                                         System.out.print("\n");
                                         System.out.println("Ingrese Unidad para añadir nota: ");
                                         nombreUnidad = lector.nextLine();
@@ -748,6 +774,10 @@ public abstract class Proyecto implements EstadoMatricula{
                                     }while (respuesta.equals("si"));
                                 }
                                 break;
+                                
+                            default:
+                                System.out.println("Ingrese opción válida");
+                                
                         }
                                 
                     }while(atras);
@@ -826,7 +856,7 @@ public abstract class Proyecto implements EstadoMatricula{
                                     do
                                     {
                                         System.out.println("Asginaturas del Curso "+ nombreCurso+":");
-                                        c.mostrarNombresAsig(nombreCurso);
+                                        c.mostrarAsignaturas(nombreCurso);
                                         System.out.print("\n");
                                         System.out.println("Ingrese Asginatura de la Unidad:");
                                         nombreAsig = lector.nextLine();
@@ -835,7 +865,7 @@ public abstract class Proyecto implements EstadoMatricula{
                                     do
                                     {
                                         System.out.println("Unidades en la Asignatura "+ nombreAsig +":");
-                                        c.mostrarNombresUnidades(nombreCurso,nombreAsig);
+                                        c.mostrarUnidades(nombreCurso,nombreAsig);
                                         System.out.print("\n");
                                         System.out.println("Ingrese Unidad para añadir nota: ");
                                         nombreUnidad = lector.nextLine();
@@ -888,6 +918,8 @@ public abstract class Proyecto implements EstadoMatricula{
                                     }while (respuesta.equals("si"));
                                 }
                                 break;
+                            default:
+                                System.out.println("Ingrese opción válida");
                         }
                                 
                     }while(atras);
@@ -967,7 +999,7 @@ public abstract class Proyecto implements EstadoMatricula{
                                                 if((notaAlumno >= 1.0 && notaAlumno <= 7.0))
                                                 {
                                                     c.addNotaEvaluacionFinal(rutAlumno,notaAlumno);
-                                                    actualizarEstado(c.getEstadoAlumno(rutAlumno));
+                                                    c.actualizarEstado(c.getEstadoAlumno(rutAlumno));
                                                 }else
                                                 {
                                                     System.out.println("Formato inválido, intente nuevamente ingresando un número entre 1.0 y 7.0.");
@@ -975,6 +1007,10 @@ public abstract class Proyecto implements EstadoMatricula{
                                                 }
                                             }while((notaAlumno >= 1.0 && notaAlumno <= 7.0)==false);
                                             break;
+                                            
+                                        default:
+                                            System.out.println("Ingrese opción valida");
+                                            System.out.print("\n");
                                     }
                                 }while(salir);
                                 break;
@@ -989,7 +1025,6 @@ public abstract class Proyecto implements EstadoMatricula{
                     //do-while para controlar que la ventana se cierre antes de seguir con la aplicación
                     do
                     {
-
                         if (ventanaMenu.isActive())
                         {
                             if (ventanaMenu.isDisplayable()!=true)
@@ -1001,8 +1036,8 @@ public abstract class Proyecto implements EstadoMatricula{
                     }while (ventanaMenu.isVisible());
                     break;
                 default:
-                    System.out.println("Ingrese opción valida: ");
-                    opcion = lector.nextInt();
+                    System.out.println("Ingrese opción valida");
+                    System.out.print("\n");
             }
             
         }while(salir);
@@ -1012,44 +1047,7 @@ public abstract class Proyecto implements EstadoMatricula{
     }
     
     // Metodos
-    public static void reportarEstado(double promedio){
-        String estado;
-        if(promedio >= 4.0){
-            estado = aprobado;
-        }
-        else{
-            if(promedio == 0.0){
-            estado = desconocido;
-            }
-            else{
-                estado = reprobado;
-            }
-        }
-        System.out.println(estado);
-    }
-    public static void actualizarEstado(int estado)
-    {
-        switch(estado)
-        {
-            case 0:
-                System.out.println(desconocido);
-                break;
-            case 1:
-                System.out.println(aprobado+" CON BECA");
-                break;
-            case 2:
-                System.out.println(aprobado+" SIN BECA");
-                break;
-            case 3:
-                System.out.println(reprobado);
-                break;
-            case 4:
-                System.out.println(reprobado);
-                break;
-        }
-        System.out.println("\n");
-    }
-    
+   
     // se genera un reporte de los datos guardados, generando un reporte de cada curso con sus asignaturas, unidades, alumnos y sus notas
     public static void generarReporte(ManejoDeCursos c) throws IOException
     {
@@ -1186,6 +1184,7 @@ public abstract class Proyecto implements EstadoMatricula{
             ex.printStackTrace();
         }
     }
+
 }
 /*
 modelo de submenus

@@ -11,7 +11,7 @@ public class Asignatura {
     
     //Constructor
     public Asignatura(String nombreAsignatura,String nombreUnidad, ArrayList<String> listaRutAlumnos) {
-        this.nombreAsignatura = nombreAsignatura;
+        setNombreAsignatura(nombreAsignatura);
         this.listaUnidades = new ArrayList<>();
         Unidad uni= new Unidad (nombreUnidad,listaRutAlumnos);
         this.listaUnidades.add(uni);
@@ -20,14 +20,14 @@ public class Asignatura {
         this.listaRutAlumnos.addAll(listaRutAlumnos);
     }
     public Asignatura(String nombreAsignatura, ArrayList<String> listaRutAlumnos) {
-        this.nombreAsignatura = nombreAsignatura;
+        setNombreAsignatura(nombreAsignatura);
         this.listaUnidades = new ArrayList<>();
         
         this.listaRutAlumnos = new ArrayList<>();
         this.listaRutAlumnos.addAll(listaRutAlumnos);
     }
     public Asignatura(String nombreAsignatura,String[] temasUnidades,ArrayList<String> listaRutAlumnos) {
-        this.nombreAsignatura = nombreAsignatura;
+        setNombreAsignatura(nombreAsignatura);
         this.listaRutAlumnos = new ArrayList<>();
         this.listaRutAlumnos.addAll(listaRutAlumnos);
         this.listaUnidades = new ArrayList<>();
@@ -38,12 +38,8 @@ public class Asignatura {
         }
     }
     
-    
-    
     //Metodos
     //Metodos de llenado
-    
-    
     public void addPreguntaUnidad(String nombreUnidad, String pregunta)
     {
         for(int i = 0; i < this.listaUnidades.size(); i++ )
@@ -53,7 +49,7 @@ public class Asignatura {
         }
     }
     
-    public void addAlumnoAsig(String rutAlumno)
+    public void addAlumnoAsig(String rutAlumno) throws InvalidNotaInitializationException
     {
         this.listaRutAlumnos.add(rutAlumno);
         for(int i = 0 ; i < this.listaUnidades.size() ; i++ )
@@ -64,7 +60,7 @@ public class Asignatura {
         Unidad uni = new Unidad (nombreUnidad,this.listaRutAlumnos);
         this.listaUnidades.add(uni);
     }
-    public void addNotaAlumnoUnidad(String nombreUnidad, double notaAGuardar,String rutAlumno, boolean inicializacion)
+    public void addNotaAlumnoUnidad(String nombreUnidad, double notaAGuardar,String rutAlumno, boolean inicializacion) throws InvalidNotaInitializationException
     {
          for(int i = 0; i < this.listaUnidades.size(); i++ )
         {
@@ -72,10 +68,17 @@ public class Asignatura {
                 this.listaUnidades.get(i).setNota(notaAGuardar, rutAlumno, inicializacion);
         }
     }
+    public ArrayList<String> getListaRuts ()
+    {
+        ArrayList <String> listaRuts = new ArrayList <>();
+        for (int i = 0 ; i < this.listaRutAlumnos.size() ; i++)
+            listaRuts.add(this.listaRutAlumnos.get(i));
+        return listaRuts;
+    }
     
     public ArrayList <String> getNombreUnidades()
     {
-        ArrayList <String> listaNombresUnidades= new ArrayList <String>();
+        ArrayList <String> listaNombresUnidades= new ArrayList <>();
         for (int i = 0 ; i < this.listaUnidades.size() ; i++)
             listaNombresUnidades.add(this.listaUnidades.get(i).getNombreUnidad());
         return listaNombresUnidades;
@@ -83,7 +86,7 @@ public class Asignatura {
     
     public ArrayList<String> getListaPreguntasUnidad(String nombreUnidad) 
     {
-        ArrayList <String> listaPreguntas= new ArrayList <String>();
+        ArrayList <String> listaPreguntas= new ArrayList <>();
         for(int k = 0; k < this.listaUnidades.size(); k++ )
         {
             if((this.listaUnidades.get(k).getNombreUnidad()).toLowerCase().equals(nombreUnidad.toLowerCase()))
@@ -144,11 +147,7 @@ public class Asignatura {
         return nombreAsignatura;
     }
 
-    public void setNombreAsignatura(String nombreAsignatura) {
+    private void setNombreAsignatura(String nombreAsignatura) {
         this.nombreAsignatura = nombreAsignatura;
     }
-
-    
-
-
 }

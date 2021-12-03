@@ -109,7 +109,7 @@ public class ManejoDeCSV {
           lo retorna como lista con los elementos del parametro sin repetirse(false) o repetido si es permitido (true)
             Ej: leerParametroCursoCSV("Quinto","Rut", "Alumnos.csv",false) retorna ArrayList<"10987546-2","20324521-k">
         */    
-    public static ArrayList<String> leerParametroCursoCSV(String nombreCurso, String parametro, String nombreArchivo, boolean repetirValor) {
+    public static ArrayList<String> leerParametroCursoCSV(String nombreCurso, String parametro, String nombreArchivo, boolean repetirValor)  {
         
         ArrayList<String> listaParametro = new ArrayList<>();
         FileReader fr = null;
@@ -148,10 +148,7 @@ public class ManejoDeCSV {
                             }
                         }
                     }
-                    
                 }
-                
-                
             }
         }catch (IOException e){
             e.printStackTrace();
