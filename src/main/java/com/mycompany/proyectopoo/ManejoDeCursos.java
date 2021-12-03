@@ -18,7 +18,7 @@ public class ManejoDeCursos implements EstadoMatricula{
     }
         
         //se crean los objetos cursos segun los datos guardados en el csv  
-    public void crearCursos()throws IOException, InvalidNotaInitializationException  {
+    public void crearCursos()throws IOException  {
         
         for (int i = 0; i < this.listaCursos.size(); i++ ){
             Curso curso = null;
@@ -95,7 +95,7 @@ public class ManejoDeCursos implements EstadoMatricula{
     }
     
     // método que lee desde el CSV "Notas.csv", las notas respectivas de cada alumno y las guarda en ram mediante el método addNotaAlumno
-    private void leerNotasCSV (Curso curso) throws InvalidNotaInitializationException
+    private void leerNotasCSV (Curso curso)
     {
         ArrayList<String> listaRuts = leerParametroCursoCSV(curso.getNombreCurso(),"Rut","Notas.csv",false);
         ArrayList<String> listaNotas = leerParametroCursoCSV(curso.getNombreCurso(),"Nota","Notas.csv",true);
@@ -609,7 +609,7 @@ public class ManejoDeCursos implements EstadoMatricula{
     }
     
     // método que agrega un alumno a un curso, tanto al csv con el método guardarAlumnoEnCSV, como en ram
-    public void addAlumnoACurso(String nombreCurso, String rutAlumno) throws InvalidNotaInitializationException
+    public void addAlumnoACurso(String nombreCurso, String rutAlumno)
     {
         for (int i = 0; i < this.cursos.size() ; i++ ){
             if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
@@ -621,7 +621,7 @@ public class ManejoDeCursos implements EstadoMatricula{
     }
     
     // método que agrega una asignatura y una unidad a un curso, tanto al csv con el método guardarAsignaturaEnCSV, como en ram
-    public void addAsignaturaACurso(String nombreCurso, String nombreAsig , String nombreUnidad) throws InvalidNotaInitializationException {
+    public void addAsignaturaACurso(String nombreCurso, String nombreAsig , String nombreUnidad) {
         for (int i = 0; i < this.cursos.size() ; i++ ){
             if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
             {
@@ -638,7 +638,7 @@ public class ManejoDeCursos implements EstadoMatricula{
     }
     
     // método que agraga una unidad a una asignatura de un curso, tanto al csv con el método guardarUnidadEnCSV, como en ram
-    public void addUnidadAAsignatura(String nombreCurso, String nombreAsig , String nombreUnidad) throws InvalidNotaInitializationException {
+    public void addUnidadAAsignatura(String nombreCurso, String nombreAsig , String nombreUnidad) {
         for (int i = 0; i < this.cursos.size() ; i++ ){
             if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase()))
             {
@@ -667,7 +667,7 @@ public class ManejoDeCursos implements EstadoMatricula{
     
     // método que agrega una nota de una unidad a un alumno específico, el boolean es utilizado para que al iniciar el programa,
     // la nota pueda tomar un valor 0.0 (sin nota)
-    public void addNotaAlumno(String nombreCurso,String nombreAsig, String nombreUnidad,String rutAlumno,double notaAGuardar,boolean inicializacion) throws InvalidNotaInitializationException
+    public void addNotaAlumno(String nombreCurso,String nombreAsig, String nombreUnidad,String rutAlumno,double notaAGuardar,boolean inicializacion)
     {
         for (int i = 0 ; i < this.cursos.size() ; i++ ){
             if((cursos.get(i).getNombreCurso()).toLowerCase().equals(nombreCurso.toLowerCase())){

@@ -77,7 +77,7 @@ public class Curso {
             }
         }
     }
-    public void addAlumno(String rutAlumno) throws InvalidNotaInitializationException
+    public void addAlumno(String rutAlumno)
     {
         this.listaRutAlumnos.add(rutAlumno);
         for(int i = 0; i < this.listaAsignaturas.size(); i++ )
@@ -94,7 +94,7 @@ public class Curso {
                 this.listaAsignaturas.get(i).addPreguntaUnidad(nombreUnidad,pregunta);
         }
     }
-    public void addNotaAlumno(String nombreAsig, String nombreUnidad, String rutAlumno, double notaAGuardar, boolean inicializacion) throws InvalidNotaInitializationException
+    public void addNotaAlumno(String nombreAsig, String nombreUnidad, String rutAlumno, double notaAGuardar, boolean inicializacion)
     {
         for(int i = 0; i < this.listaAsignaturas.size(); i++ )
         {

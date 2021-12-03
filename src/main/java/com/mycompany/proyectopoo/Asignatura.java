@@ -49,7 +49,7 @@ public class Asignatura {
         }
     }
     
-    public void addAlumnoAsig(String rutAlumno) throws InvalidNotaInitializationException
+    public void addAlumnoAsig(String rutAlumno)
     {
         this.listaRutAlumnos.add(rutAlumno);
         for(int i = 0 ; i < this.listaUnidades.size() ; i++ )
@@ -60,7 +60,7 @@ public class Asignatura {
         Unidad uni = new Unidad (nombreUnidad,this.listaRutAlumnos);
         this.listaUnidades.add(uni);
     }
-    public void addNotaAlumnoUnidad(String nombreUnidad, double notaAGuardar,String rutAlumno, boolean inicializacion) throws InvalidNotaInitializationException
+    public void addNotaAlumnoUnidad(String nombreUnidad, double notaAGuardar,String rutAlumno, boolean inicializacion)
     {
          for(int i = 0; i < this.listaUnidades.size(); i++ )
         {

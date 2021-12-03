@@ -2,7 +2,6 @@ package com.mycompany.proyectopoo;
 
 import com.mycompany.proyectopoo.FormatoPreliminar;
 import com.mycompany.proyectopoo.FormatoPreliminarAprobado;
-import com.mycompany.proyectopoo.InvalidNotaInitializationException;
 import com.mycompany.proyectopoo.VentanaAgregar;
 import com.mycompany.proyectopoo.VentanaMenu;
 import static com.mycompany.proyectopoo.ManejoDeCSV.generarNotasCSV;
@@ -23,7 +22,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Proyecto{
     
-    public static void main(String [] arg) throws IOException, InterruptedException, InvalidNotaInitializationException
+    public static void main(String [] arg) throws IOException, InterruptedException
     {
         Scanner lector = new Scanner(System.in);
         int opcion;
@@ -43,10 +42,15 @@ public class Proyecto{
         VentanaAgregar ventanaAgregar;
         
         c.crearCursos();
-        //c.addNotaAlumno("Primero", "Matematicas", "NumerosNaturales", "12123412-0", 8.0, true); // ejemplo de excepcion de nota invalida (InvalidNotaInitializationException)
+        /*
+        //Ejemplo de excepcion de nota invalida (InvalidNotaInitializationException)
+        c.addNotaAlumno("Primero", "Matematicas", "NumerosNaturales", "12123412-0", 8.0, true);
+        
+        //Ejemplos de excepción SchoolYearUnfinishedException
         c.setFormatoEstado(new FormatoFinal());
         c.setFormatoEstado(new FormatoFinalAprobado());
         c.setFormatoEstado(new FormatoFinalReprobado());
+        */
         do{
             
             // Menu

@@ -36,12 +36,8 @@ public class Unidad {
     
     public void addAlumnoUnidad(String rutAlumno)
     {
-        try{
-            setNota(0.0, rutAlumno, true);
-            this.listaRutAlumnos.add(rutAlumno);
-        }catch(InvalidNotaInitializationException e){
-            e.printStackTrace();
-        }
+        setNota(0.0, rutAlumno, true);
+        this.listaRutAlumnos.add(rutAlumno);
         
     }
     public boolean deleteAlumno(String rutAlumno)
@@ -110,16 +106,22 @@ public class Unidad {
     }
     
     // si la nota a ingresar es para inicializar la unidad, se admite el valor 0.0 que es el valor de una nota sin valor
-    public void setNota(double nota, String rutAlumno, boolean inicializacion) throws InvalidNotaInitializationException
+    public void setNota(double nota, String rutAlumno, boolean inicializacion)
     {
-        if ((nota >= 1.0 && nota <= 7.0)||(inicializacion && nota==0.0)){
-            this.mapaNotasUnidad.put(rutAlumno, Precision.round(nota,1,1));
-        }else
+        try
         {
-            
-            this.mapaNotasUnidad.put(rutAlumno, 0.0);
-            throw new InvalidNotaInitializationException();
+            if ((nota >= 1.0 && nota <= 7.0)||(inicializacion && nota==0.0)){
+                this.mapaNotasUnidad.put(rutAlumno, Precision.round(nota,1,1));
+            }else
+            {
+                throw new InvalidNotaInitializationException();
+            }
+        
+        }catch(InvalidNotaInitializationException e)
+        {
+            e.printStackTrace();
         }
+                
         
     }
 }
